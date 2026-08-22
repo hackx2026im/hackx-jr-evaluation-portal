@@ -5,8 +5,8 @@ import { Sidebar } from "@/components/sidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard | ideasprint 2026",
-  description: "Manage ideasprint 2026 evaluations",
+  title: "Admin Dashboard | hackX 11.0",
+  description: "Manage hackX 11.0 evaluations",
 };
 
 export default async function AdminLayout({
