@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Rollback for Migration 008: Multiple Evaluator Assignments
 -- ============================================================
 

@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 007: Fix QA Audit Findings
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

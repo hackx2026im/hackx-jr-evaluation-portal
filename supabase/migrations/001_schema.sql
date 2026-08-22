@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 001: Schema (Tables, Indexes, Triggers, Functions)
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

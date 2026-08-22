@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 009: PDF Annotations & Video Timestamp Comments
 -- Run this in the Supabase SQL Editor AFTER 001-008.
 -- ============================================================

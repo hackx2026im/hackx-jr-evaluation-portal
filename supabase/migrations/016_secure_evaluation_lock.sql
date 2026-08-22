@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 016: Secure Evaluation Lock (Server-Side)
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- DB CLEANUP SCRIPT — Full reset for a fresh start
 -- ⚠️  WARNING: This is IRREVERSIBLE. Run in Supabase SQL Editor.
 -- ============================================================

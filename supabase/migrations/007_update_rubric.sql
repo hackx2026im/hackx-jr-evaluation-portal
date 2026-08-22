@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 007: Update Rubric to New Grading Scheme
 -- Run this in the Supabase SQL Editor to update the existing rubric data.
 -- ============================================================

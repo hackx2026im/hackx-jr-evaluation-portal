@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 008: Multiple Evaluator Assignments
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

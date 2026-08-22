@@ -1,5 +1,5 @@
 -- ===========================================================
--- ideasprint 2026 — Backup System SQL
+-- hackX — Backup System SQL
 -- Run in the Supabase SQL Editor (once)
 -- ===========================================================
 

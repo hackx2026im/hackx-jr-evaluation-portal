@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 004: Proposal Assignment System
 -- Run this in the Supabase SQL Editor AFTER 001, 002, 003.
 -- ============================================================

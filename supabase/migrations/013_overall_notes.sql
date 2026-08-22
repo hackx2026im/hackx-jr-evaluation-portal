@@ -1,5 +1,5 @@
 -- ============================================================
--- ideasprint 2026 Evaluation Dashboard
+-- hackX Evaluation Dashboard
 -- Migration 013: Evaluation Overall Notes
 -- Run this in the Supabase SQL Editor.
 -- ============================================================
