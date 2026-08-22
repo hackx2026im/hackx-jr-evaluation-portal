@@ -21,9 +21,16 @@ ALTER TABLE public.rubric_criteria
   CHECK (max_score > 0);
 
 -- 3. Evaluation score must be non-negative
-ALTER TABLE public.evaluations
-  ADD CONSTRAINT chk_evaluation_score_nonneg
-  CHECK (score >= 0);
+--    Wrapped in DO block — 007_fix_qa_audit may have already added
+--    "check_score_positive" on this column. This skips gracefully if so.
+DO $$
+BEGIN
+  ALTER TABLE public.evaluations
+    ADD CONSTRAINT chk_evaluation_score_nonneg CHECK (score >= 0);
+EXCEPTION WHEN duplicate_object THEN
+  RAISE NOTICE 'A score non-negative constraint already exists on evaluations — skipping.';
+END;
+$$;
 
 -- ============================================================
 -- 4. Upgrade submit_evaluation RPC
