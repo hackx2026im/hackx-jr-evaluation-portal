@@ -83,24 +83,11 @@ export default function LoginPage() {
 
         {/* Brand content over image */}
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              background: "var(--bw-white)",
-              borderRadius: "var(--bw-radius-md)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--bw-black)",
-              fontFamily: "var(--bw-font-heading)",
-              fontWeight: "var(--bw-fw-bold)" as any,
-              fontSize: "var(--bw-fs-h3)",
-              marginBottom: "var(--bw-space-6)",
-            }}
-          >
-            iS
-          </div>
+          <img
+            src="/hackxlogo.webp"
+            alt="hackX 11.0 Logo"
+            style={{ height: "64px", width: "auto", marginBottom: "var(--bw-space-6)" }}
+          />
           <h1
             style={{
               fontFamily: "var(--bw-font-heading)",
@@ -111,9 +98,9 @@ export default function LoginPage() {
               marginBottom: "var(--bw-space-4)",
             }}
           >
-            ideasprint
+            hackX
             <br />
-            2026
+            11.0
           </h1>
           <p
             style={{
@@ -155,24 +142,11 @@ export default function LoginPage() {
             className="lg:hidden"
             style={{ marginBottom: "var(--bw-space-10)", textAlign: "center" }}
           >
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                background: "var(--bw-bg-inverse)",
-                borderRadius: "var(--bw-radius-md)",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--bw-content-inverse)",
-                fontFamily: "var(--bw-font-heading)",
-                fontWeight: "var(--bw-fw-bold)" as any,
-                fontSize: "var(--bw-fs-h4)",
-                marginBottom: "var(--bw-space-3)",
-              }}
-            >
-              iS
-            </div>
+            <img
+              src="/hackxlogo.webp"
+              alt="hackX 11.0 Logo"
+              style={{ height: "48px", width: "auto", marginBottom: "var(--bw-space-3)", display: "inline-block" }}
+            />
             <h1
               style={{
                 fontFamily: "var(--bw-font-heading)",
@@ -182,7 +156,7 @@ export default function LoginPage() {
                 lineHeight: "var(--bw-lh-tight)",
               }}
             >
-              ideasprint 2026
+              hackX 11.0
             </h1>
             <p
               style={{

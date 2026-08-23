@@ -75,7 +75,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
       const a = document.createElement("a");
       const date = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `ideasprint-backup-${date}.json`;
+      a.download = `hackX-backup-${date}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -129,7 +129,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `ideasprint-2026-top15.csv`;
+    a.download = `hackX-2026-top15.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -250,7 +250,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `ideasprint-2026-evaluator-comments.csv`;
+    a.download = `hackX-2026-evaluator-comments.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -423,7 +423,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `ideasprint-2026-selected-top15-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `hackX-2026-selected-top15-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     toast.success(`Selected CSV downloaded — ${selected.length} proposals`);
@@ -459,7 +459,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `ideasprint-2026-rejected-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `hackX-2026-rejected-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     toast.success(`Rejected CSV downloaded — ${rejected.length} proposals`);
@@ -739,7 +739,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
             Dashboard
           </h2>
           <p style={{ marginTop: "var(--bw-space-2)", fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)" }}>
-            Overview of all ideasprint 2026 proposals
+            Overview of all hackX 11.0 proposals
           </p>
         </div>
         {/* Header action buttons */}

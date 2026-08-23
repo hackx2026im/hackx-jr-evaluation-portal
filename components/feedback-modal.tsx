@@ -228,7 +228,7 @@ export function FeedbackModal({
                   marginBottom: "var(--bw-space-3)",
                 }}
               >
-                IDEASPRINT 2026
+                HACKX 11.0
               </p>
               <h2
                 id="feedback-title"
@@ -255,7 +255,7 @@ export function FeedbackModal({
               >
                 {existingFeedback?.overall_rating
                   ? "Update your thoughts below — every detail helps."
-                  : "You made ideasprint 2026 possible. We would love to hear your thoughts on the portal — what worked, what didn't, and anything we can do better. This means a lot to us and will directly shape how we build for ideasprint and the upcoming hackX."}
+                  : "You made hackX 11.0 possible. We would love to hear your thoughts on the portal — what worked, what didn't, and anything we can do better. This means a lot to us and will directly shape how we build for hackX and the upcoming hackX."}
               </p>
             </div>
 

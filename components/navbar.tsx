@@ -106,24 +106,11 @@ export function Navbar({ fullName = "", role }: NavbarProps) {
     >
       {/* Brand */}
       <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)" }}>
-        {/* Uber-style square logo mark */}
-        <div
-          style={{
-            width: 28,
-            height: 28,
-            background: "var(--bw-bg-inverse)",
-            borderRadius: "var(--bw-radius-sm)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "var(--bw-content-inverse)",
-            fontFamily: "var(--bw-font-heading)",
-            fontWeight: "var(--bw-fw-bold)" as any,
-            fontSize: "14px",
-          }}
-        >
-          iS
-        </div>
+        <img 
+          src="/Xlogo-favicon.png" 
+          alt="hackX 11.0 Logo" 
+          style={{ height: "32px", width: "auto" }} 
+        />
         <div>
           <span
             style={{
@@ -133,7 +120,7 @@ export function Navbar({ fullName = "", role }: NavbarProps) {
               color: "var(--bw-content-primary)",
             }}
           >
-            ideasprint 2026
+            hackX 11.0
           </span>
           {role && (
             <span

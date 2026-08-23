@@ -24,7 +24,7 @@ interface Slide {
 
 const SLIDES: Slide[] = [
   {
-    eyebrow: "IDEASPRINT 2026",
+    eyebrow: "HACKX 11.0",
     heading: "Welcome.",
     body: (
       <div className="space-y-4">

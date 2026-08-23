@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = await createClient();
   const { data: proposal } = await supabase.from("proposals").select("team_name").eq("id", id).single();
   return {
-    title: proposal ? `Evaluate ${proposal.team_name} | ideasprint 2026` : "Evaluate Proposal | ideasprint 2026",
+    title: proposal ? `Evaluate ${proposal.team_name} | hackX 11.0` : "Evaluate Proposal | hackX 11.0",
   };
 }
 

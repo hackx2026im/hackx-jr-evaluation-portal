@@ -382,7 +382,7 @@ export function EvaluatorDashboardClient({
         <div>
           <h2 style={{ fontFamily: "var(--bw-font-heading)", fontSize: "clamp(1.5rem, 5vw, var(--bw-fs-h1))", fontWeight: "var(--bw-fw-bold)" as any, lineHeight: "var(--bw-lh-tight)" }}>Evaluator Dashboard</h2>
           <p style={{ marginTop: "var(--bw-space-2)", fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)" }}>
-            Review and evaluate ideasprint 2026 proposals
+            Review and evaluate hackX 11.0 proposals
           </p>
         </div>
 

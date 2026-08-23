@@ -3,9 +3,9 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ideasprint 2026 — Evaluation Dashboard",
+  title: "hackX 11.0 — Evaluation Dashboard",
   description:
-    "Evaluation portal for the ideasprint 2026 lecture panel.",
+    "Evaluation portal for the hackX 11.0 lecture panel.",
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" href="/Xlogo-favicon.png" />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"

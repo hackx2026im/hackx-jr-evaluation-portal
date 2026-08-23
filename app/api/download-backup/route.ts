@@ -59,7 +59,7 @@ export async function GET() {
       meta: {
         exported_at: new Date().toISOString(),
         exported_by: user.id,
-        project: "ideasprint 2026",
+        project: "hackX 11.0",
         version: "1.0",
         tables_included: [
           "profiles", "proposals", "rubric_sections", "rubric_criteria",
@@ -89,7 +89,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Content-Disposition": `attachment; filename="ideasprint-backup-${timestamp}.json"`,
+        "Content-Disposition": `attachment; filename="hackX-backup-${timestamp}.json"`,
         "Cache-Control": "no-store",
       },
     });

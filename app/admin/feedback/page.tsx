@@ -5,8 +5,8 @@ import { AdminFeedbackClient } from "./client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Evaluator Feedback | Admin | ideasprint 2026",
-  description: "View evaluator feedback for ideasprint 2026.",
+  title: "Evaluator Feedback | Admin | hackX 11.0",
+  description: "View evaluator feedback for hackX 11.0.",
 };
 
 export default async function AdminFeedbackPage() {

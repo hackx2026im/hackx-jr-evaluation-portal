@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
               marginBottom: "var(--bw-space-4)",
             }}
           >
-            ideasprint
+            hackX
             <br />
             2026
           </h1>
@@ -207,7 +207,7 @@ export default function ResetPasswordPage() {
                 lineHeight: "var(--bw-lh-tight)",
               }}
             >
-              ideasprint 2026
+              hackX 11.0
             </h1>
           </div>
 
@@ -280,7 +280,7 @@ export default function ResetPasswordPage() {
           >
             Secured by Supabase Authentication.
             <br />
-            Always ensure you are on the official ideasprint portal.
+            Always ensure you are on the official hackX portal.
           </p>
         </div>
       </div>

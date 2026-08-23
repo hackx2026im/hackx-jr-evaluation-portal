@@ -190,7 +190,7 @@ export function AdminFeedbackClient({ feedbackRows, evaluators }: Props) {
           Evaluator Feedback
         </h2>
         <p style={{ marginTop: "var(--bw-space-2)", fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)" }}>
-          Post-evaluation feedback from ideasprint 2026 evaluators
+          Post-evaluation feedback from hackX 11.0 evaluators
         </p>
       </div>
 
