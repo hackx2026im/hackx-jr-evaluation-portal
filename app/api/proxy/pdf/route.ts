@@ -78,8 +78,8 @@ export async function GET(request: NextRequest) {
     const driveId = extractGoogleDriveId(rawUrl);
 
     if (driveId) {
-      // Google Drive — use direct download endpoint
-      downloadUrl = `https://drive.google.com/uc?export=download&id=${driveId}`;
+      // Google Drive — use direct download endpoint with confirm=t to bypass virus scan warning for large files
+      downloadUrl = `https://drive.google.com/uc?export=download&id=${driveId}&confirm=t`;
     } else {
       // Not Google Drive — attempt to fetch directly
       downloadUrl = rawUrl;
@@ -97,6 +97,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}` },
         { status: 502 }
+      );
+    }
+
+    const contentType = pdfResponse.headers.get("content-type") || "";
+    if (contentType.includes("text/html")) {
+      return NextResponse.json(
+        { error: "Google Drive returned an HTML page instead of a PDF. Please ensure the Google Drive link is set to 'Anyone with the link can view' and is a direct file link." },
+        { status: 403 }
       );
     }
 
