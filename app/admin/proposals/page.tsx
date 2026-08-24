@@ -34,8 +34,8 @@ export default function UploadProposalsPage() {
   const handleSingleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!teamName || !productName) {
-      toast.error("Team Name and Product Name are required");
+    if (!teamName || !proposalUrl || !videoUrl) {
+      toast.error("Team Name, Proposal PDF Link, and Pitch Video Link are required");
       return;
     }
 
@@ -43,7 +43,7 @@ export default function UploadProposalsPage() {
 
     const { error } = await supabase.from("proposals").insert({
       team_name: teamName,
-      product_name: productName,
+      product_name: productName || "Untitled Product",
       description,
       proposal_url: proposalUrl,
       video_url: videoUrl,
@@ -215,7 +215,6 @@ export default function UploadProposalsPage() {
                     placeholder="SmartLearn AI"
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
-                    required
                     style={{ paddingLeft: 36 }}
                     pill
                   />
@@ -240,6 +239,7 @@ export default function UploadProposalsPage() {
                     value={proposalUrl}
                     onChange={(e) => setProposalUrl(e.target.value)}
                     type="url"
+                    required
                     style={{ paddingLeft: 36 }}
                     pill
                   />
@@ -255,6 +255,7 @@ export default function UploadProposalsPage() {
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
                     type="url"
+                    required
                     style={{ paddingLeft: 36 }}
                     pill
                   />
