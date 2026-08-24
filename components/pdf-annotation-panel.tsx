@@ -58,6 +58,7 @@ export function PdfAnnotationPanel({
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   // Annotation state
   const [annotations, setAnnotations] = useState<PdfAnnotation[]>(initialAnnotations);
@@ -349,10 +350,11 @@ export function PdfAnnotationPanel({
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 256, color: "var(--bw-content-disabled)", gap: "var(--bw-space-2)" }}>
               <p style={{ fontSize: "var(--bw-fs-sm)" }}>Failed to load PDF</p>
               <p style={{ fontSize: "var(--bw-fs-xs)" }}>{pdfError}</p>
-              <Button variant="secondary" size="sm" onClick={() => setPdfLoading(true)}>Retry</Button>
+              <Button variant="secondary" size="sm" onClick={() => { setPdfError(null); setPdfLoading(true); setRetryKey((k) => k + 1); }}>Retry</Button>
             </div>
           )}
           <Document
+            key={retryKey}
             file={proxyUrl}
             onLoadSuccess={onDocumentLoadSuccess}
             onLoadError={onDocumentLoadError}

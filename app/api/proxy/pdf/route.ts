@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Simple in-memory rate limiter: userId -> { count, resetAt }
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 10; // max requests per minute
+const RATE_LIMIT = 60; // max requests per minute
 const RATE_WINDOW = 60_000; // 1 minute in ms
 
 function isRateLimited(userId: string): boolean {
@@ -94,6 +94,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!pdfResponse.ok) {
+      console.error(`[PDF proxy] Upstream error: ${pdfResponse.status} ${pdfResponse.statusText} for ${downloadUrl}`);
       return NextResponse.json(
         { error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}` },
         { status: 502 }
@@ -101,15 +102,30 @@ export async function GET(request: NextRequest) {
     }
 
     const contentType = pdfResponse.headers.get("content-type") || "";
+
+    // Google Drive returns HTML pages for login walls, virus scan confirmations, etc.
+    // Valid PDF downloads come as application/pdf OR application/octet-stream.
     if (contentType.includes("text/html")) {
+      console.error(`[PDF proxy] Got HTML instead of PDF for ${downloadUrl}`);
       return NextResponse.json(
         { error: "Google Drive returned an HTML page instead of a PDF. Please ensure the Google Drive link is set to 'Anyone with the link can view' and is a direct file link." },
         { status: 403 }
       );
     }
 
-    // 6. Stream the response back
+    // 6. Read the full response
     const pdfBuffer = await pdfResponse.arrayBuffer();
+
+    // 7. Validate that the buffer actually starts with %PDF
+    const header = new Uint8Array(pdfBuffer.slice(0, 5));
+    const headerStr = String.fromCharCode(...header);
+    if (!headerStr.startsWith("%PDF")) {
+      console.error(`[PDF proxy] Response is not a PDF. First bytes: "${headerStr}" for ${downloadUrl}`);
+      return NextResponse.json(
+        { error: "The downloaded file is not a valid PDF." },
+        { status: 422 }
+      );
+    }
 
     return new NextResponse(pdfBuffer, {
       status: 200,
