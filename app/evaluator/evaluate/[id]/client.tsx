@@ -402,7 +402,7 @@ export function EvaluationViewClient({
               <h2
                 style={{ fontFamily: "var(--bw-font-heading)", fontSize: "var(--bw-fs-h2)", fontWeight: "var(--bw-fw-bold)" as any, lineHeight: "var(--bw-lh-tight)" }}
               >
-                {"Team " + proposal.team_name}
+                {proposal.team_name}
               </h2>
               {!isEditing && <Badge variant="secondary">Read Only</Badge>}
               {effectivelyLocked && (
