@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+// Vercel serverless config: extend timeout for large PDF downloads
+export const maxDuration = 30; // seconds (default is 10 on hobby tier)
+export const dynamic = "force-dynamic";
+
 // Simple in-memory rate limiter: userId -> { count, resetAt }
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 60; // max requests per minute
