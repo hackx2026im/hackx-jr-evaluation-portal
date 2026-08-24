@@ -35,8 +35,10 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Allow auth callback and reset password page to pass through
-  if (pathname.startsWith("/api/auth") || pathname === "/reset-password") {
+  // Allow auth callback, reset password, and API proxy routes to pass through.
+  // API proxy routes (e.g. /api/proxy/pdf) handle their own authentication
+  // and must not be redirected to /login, which would return HTML instead of binary data.
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/proxy") || pathname === "/reset-password") {
     return supabaseResponse;
   }
 
