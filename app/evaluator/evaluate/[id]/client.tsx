@@ -402,7 +402,7 @@ export function EvaluationViewClient({
             <h2
               style={{ fontFamily: "var(--bw-font-heading)", fontSize: "var(--bw-fs-h2)", fontWeight: "var(--bw-fw-bold)" as any, lineHeight: "var(--bw-lh-tight)" }}
             >
-              {proposal.product_name}
+              {proposal.team_name}
             </h2>
             {!isEditing && <Badge variant="secondary">Read Only</Badge>}
             {effectivelyLocked && (
@@ -415,7 +415,6 @@ export function EvaluationViewClient({
               <Badge variant="positive" style={{ fontSize: "10px" }}>Admin Override</Badge>
             )}
           </div>
-          <p style={{ color: "var(--bw-content-secondary)", fontSize: "var(--bw-fs-sm)" }}>by {proposal.team_name}</p>
           {proposal.description && (
             <p style={{ fontSize: "var(--bw-fs-xs)", color: "var(--bw-content-secondary)", marginTop: "var(--bw-space-2)", maxWidth: 672, lineHeight: "var(--bw-lh-relaxed)" }}>
               {proposal.description}
