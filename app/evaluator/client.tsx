@@ -59,7 +59,6 @@ interface Props {
   gradedProposalIds: string[];
   profiles: Pick<Profile, "id" | "full_name">[];
   breakdownData?: Record<string, any[]>;
-  evaluatorByProposal?: Record<string, string[]>;
   scoresByProposal?: Record<string, Record<string, { name: string; total: number }>>;
   assignments: ProposalAssignment[];
   serverNow?: string;
@@ -77,7 +76,6 @@ export function EvaluatorDashboardClient({
   gradedProposalIds,
   profiles,
   breakdownData,
-  evaluatorByProposal = {},
   scoresByProposal = {},
   assignments = [],
   daysLeft = "14",
@@ -90,7 +88,6 @@ export function EvaluatorDashboardClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchQueryAll, setSearchQueryAll] = useState("");
   const [showOnlyPending, setShowOnlyPending] = useState(false);
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(!hasSeenOnboarding);
@@ -107,12 +104,7 @@ export function EvaluatorDashboardClient({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // All Proposals Pagination & Filter state
-  const [allProposalsPage, setAllProposalsPage] = useState(1);
-  const [allProposalsFilter, setAllProposalsFilter] = useState<"all" | "graded" | "assigned">("all");
-  const [filterByEvaluator, setFilterByEvaluator] = useState<string>("all");
-  const [showGradedOnly, setShowGradedOnly] = useState(false);
-  const itemsPerPage = 10;
+
 
   useEffect(() => {
     const error = searchParams.get("error");
@@ -152,7 +144,6 @@ export function EvaluatorDashboardClient({
     [proposals, assigneesByProposal, currentUserId]
   );
 
-  const allProposals = proposals;
 
   const filteredAssignments = useMemo(() => {
     let result = myAssignments;
@@ -169,69 +160,7 @@ export function EvaluatorDashboardClient({
     return result;
   }, [myAssignments, searchQuery, showOnlyPending, gradedProposalIds]);
 
-  const filteredAll = useMemo(() => {
-    let result = allProposals;
-    
-    if (allProposalsFilter === "graded") {
-      result = result.filter(p => p.is_graded);
-    } else if (allProposalsFilter === "assigned") {
-      result = result.filter(p => (assigneesByProposal[p.id] || []).length > 0);
-    }
 
-    if (showGradedOnly) {
-      result = result.filter(p => p.is_graded);
-    }
-
-    if (filterByEvaluator !== "all") {
-      result = result.filter(p => {
-        const assignees = assigneesByProposal[p.id] || [];
-        return assignees.includes(filterByEvaluator);
-      });
-    }
-    
-    if (searchQueryAll) {
-      const q = searchQueryAll.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.team_name.toLowerCase().includes(q) ||
-          p.product_name.toLowerCase().includes(q) ||
-          (p.description && p.description.toLowerCase().includes(q))
-      );
-    }
-    return result;
-  }, [allProposals, searchQueryAll, allProposalsFilter, showGradedOnly, filterByEvaluator, assigneesByProposal]);
-
-  const paginatedAll = useMemo(() => {
-    const start = (allProposalsPage - 1) * itemsPerPage;
-    return filteredAll.slice(start, start + itemsPerPage);
-  }, [filteredAll, allProposalsPage, itemsPerPage]);
-
-  const totalAllPages = Math.ceil(filteredAll.length / itemsPerPage);
-
-  // Unique evaluator names for filter dropdown
-  const uniqueEvaluatorNames = useMemo(() => {
-    const names: { id: string; name: string }[] = [];
-    const seen = new Set<string>();
-    profiles.forEach(p => {
-      if (!seen.has(p.id)) {
-        seen.add(p.id);
-        names.push({ id: p.id, name: p.full_name });
-      }
-    });
-    return names;
-  }, [profiles]);
-
-  // Reset page when filter or search changes
-  useEffect(() => {
-    setAllProposalsPage(1);
-  }, [searchQueryAll, allProposalsFilter, showGradedOnly, filterByEvaluator]);
-
-  const topTeams = useMemo(() => {
-    return proposals
-      .filter((p) => p.is_graded)
-      .sort((a, b) => b.total_score - a.total_score)
-      .slice(0, 15);
-  }, [proposals]);
 
   const renderBreakdownDialog = (
     proposal: Proposal,
@@ -386,9 +315,8 @@ export function EvaluatorDashboardClient({
           </p>
         </div>
 
-        {/* Main Grid: Left (Cards + Assignments + All Proposals) | Right (Top 15) */}
-        <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
-          {/* LEFT COLUMN: cards + stacked tables */}
+        {/* Main Grid: Cards + Assignments */}
+        <div className="flex flex-col gap-6">
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-6)", minWidth: 0 }}>
             {/* Quick Stats — Modern Icon Cards */}
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
@@ -618,181 +546,6 @@ export function EvaluatorDashboardClient({
               </CardContent>
             </Card>
 
-{/* Table 2: All Proposals */}
-            <Card variant="flat">
-              <CardHeader style={{ padding: "var(--bw-space-6)" }}>
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "var(--bw-space-3)" }}>
-                  <div>
-                    <CardTitle style={{ fontSize: "var(--bw-fs-h4)" }}>All Proposals</CardTitle>
-                    <p style={{ fontSize: "var(--bw-fs-xs)", color: "var(--bw-content-tertiary)", marginTop: "var(--bw-space-1)" }}>
-                      View-only — shows who is assigned and current scores
-                    </p>
-                  </div>
-                </div>
-                {/* Inline filters row */}
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--bw-space-3)", marginTop: "var(--bw-space-3)" }}>
-                  {/* Search — grows to fill available space, min-w-0 prevents overflow */}
-                  <div style={{ position: "relative", flex: "1 1 140px", minWidth: 0 }}>
-                    <Search size={16} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--bw-content-disabled)", pointerEvents: "none" }} />
-                    <Input type="search" placeholder="Search teams..." value={searchQueryAll} onChange={(e) => setSearchQueryAll(e.target.value)} style={{ paddingLeft: 34, minHeight: 44 }} pill />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-2)", flexShrink: 0 }}>
-                    <label htmlFor="graded-toggle" style={{ fontSize: "var(--bw-fs-xs)", fontWeight: "var(--bw-fw-medium)" as any, cursor: "pointer", userSelect: "none", color: "var(--bw-content-secondary)", whiteSpace: "nowrap" }}>Graded only</label>
-                    <button id="graded-toggle" type="button" role="switch" aria-checked={showGradedOnly} onClick={() => setShowGradedOnly(!showGradedOnly)} style={{ width: 36, height: 20, borderRadius: 20, background: showGradedOnly ? "var(--bw-black)" : "var(--bw-chip)", border: "none", position: "relative", cursor: "pointer", flexShrink: 0 }}>
-                      <span style={{ position: "absolute", top: 3, left: showGradedOnly ? 18 : 3, width: 14, height: 14, borderRadius: "50%", background: showGradedOnly ? "var(--bw-white)" : "var(--bw-content-tertiary)", transition: "left 0.2s ease" }} />
-                    </button>
-                  </div>
-                  {/* Evaluator filter — shrinks on mobile, full-width on its own row when wrapping */}
-                  <div style={{ position: "relative", flex: "1 1 140px", minWidth: 0 }}>
-                    <select value={filterByEvaluator} onChange={(e) => setFilterByEvaluator(e.target.value)} style={{ appearance: "none", fontSize: "var(--bw-fs-xs)", fontWeight: "var(--bw-fw-medium)" as any, padding: "6px 28px 6px 12px", borderRadius: "var(--bw-radius-pill)", border: "1px solid var(--bw-border)", background: "var(--bw-bg-primary)", color: "var(--bw-content-primary)", cursor: "pointer", outline: "none", width: "100%", minHeight: 44 }}>
-                      <option value="all">All Evaluators</option>
-                      {uniqueEvaluatorNames.map(e => (<option key={e.id} value={e.id}>{e.name}</option>))}
-                    </select>
-                    <ChevronDown size={14} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--bw-content-secondary)" }} />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent style={{ padding: "0 var(--bw-space-6) var(--bw-space-6)" }}>
-                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "60vh", margin: "0 calc(var(--bw-space-6) * -1)" }}>
-                <Table style={{ minWidth: 800 }}>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead style={{ paddingLeft: "var(--bw-space-6)" }}>Team &amp; Product</TableHead>
-                      <TableHead>Evaluators</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead style={{ textAlign: "right", paddingRight: "var(--bw-space-6)" }}>Details</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedAll.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} style={{ height: 96, textAlign: "center", color: "var(--bw-content-disabled)" }}>
-                          No proposals found.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      paginatedAll.map((proposal) => {
-                        const assigneeIds = assigneesByProposal[proposal.id] || [];
-                        const isMyProposal = assigneeIds.includes(currentUserId);
-                        const isAssigned = assigneeIds.length > 0;
-                        const assigneeNames = assigneeIds.map(id => evaluatorMap.get(id) || "Unknown");
-
-                        return (
-                          <TableRow key={proposal.id} style={{ backgroundColor: isMyProposal ? "var(--bw-hover-light)" : "transparent" }}>
-                            <TableCell>
-                              <div style={{ fontWeight: "var(--bw-fw-medium)" as any }}>{proposal.team_name}</div>
-                              <div style={{ fontSize: "var(--bw-fs-xs)", color: "var(--bw-content-tertiary)" }}>{proposal.product_name}</div>
-                            </TableCell>
-                            <TableCell>
-                              {isAssigned ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-2)" }}>
-                                  {assigneeIds.map((evalId) => {
-                                    const isMe = evalId === currentUserId;
-                                    const name = isMe ? "You" : (evaluatorMap.get(evalId) || "Unknown");
-                                    return (
-                                      <div key={evalId} style={{ display: "flex", alignItems: "center", height: 24 }}>
-                                        <span style={{ fontSize: "var(--bw-fs-xs)", color: isMe ? "var(--bw-content-primary)" : "var(--bw-content-secondary)", fontWeight: isMe ? "var(--bw-fw-bold)" as any : "var(--bw-fw-normal)" as any }}>
-                                          {name}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              ) : (
-                                <span style={{ fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-disabled)", fontStyle: "italic" }}>Unassigned</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {isAssigned ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-2)" }}>
-                                  {assigneeIds.map((evalId) => {
-                                    const hasGraded = !!scoresByProposal[proposal.id]?.[evalId];
-                                    return (
-                                      <div key={evalId} style={{ display: "flex", alignItems: "center", height: 24 }}>
-                                        <Badge variant={hasGraded ? "positive" : "secondary"}>
-                                          {hasGraded ? "Graded" : "Pending"}
-                                        </Badge>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              ) : null}
-                            </TableCell>
-                            <TableCell style={{ textAlign: "right", paddingRight: "var(--bw-space-6)" }}>
-                              {renderBreakdownDialog(proposal, <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><BarChart size={14} />View</span>, true)}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-                </div>
-                {totalAllPages > 1 && (
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--bw-space-4)", padding: "var(--bw-space-4)", borderTop: "1px solid var(--bw-border)" }}>
-                    <Button variant="secondary" size="sm" onClick={() => setAllProposalsPage(p => Math.max(1, p - 1))} disabled={allProposalsPage === 1}>Previous</Button>
-                    <span style={{ fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)" }}>Page {allProposalsPage} of {totalAllPages}</span>
-                    <Button variant="secondary" size="sm" onClick={() => setAllProposalsPage(p => Math.min(totalAllPages, p + 1))} disabled={allProposalsPage === totalAllPages}>Next</Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* RIGHT COLUMN: Top 15 Teams (sticky sidebar) */}
-          <div style={{ position: "sticky", top: 72, alignSelf: "start", maxHeight: "calc(100vh - 100px)", overflowY: "auto", minWidth: 0 }}>
-            <Card className="bw-card--flat" style={{ display: "flex", flexDirection: "column" }}>
-              <CardHeader>
-                <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-2)" }}>
-                  <Trophy size={18} style={{ color: "var(--bw-warning)" }} />
-                  <CardTitle style={{ fontSize: "var(--bw-fs-h4)" }}>Top 15 Teams</CardTitle>
-                </div>
-                <p style={{ fontSize: "var(--bw-fs-xs)", color: "var(--bw-content-tertiary)", marginTop: "var(--bw-space-1)" }}>
-                  Based on average marks. Not your individual marks.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-3)" }}>
-                  {topTeams.length === 0 ? (
-                    <div style={{ fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-disabled)", textAlign: "center", padding: "var(--bw-space-6) 0" }}>No graded proposals yet.</div>
-                  ) : (
-                    Array.from({ length: 15 }).map((_, index) => {
-                      const team = topTeams[index];
-                      if (!team) {
-                        return (
-                          <div key={`empty-${index}`} style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)", padding: "var(--bw-space-2) var(--bw-space-3)", borderRadius: "var(--bw-radius-md)", border: "1px dashed var(--bw-border)", opacity: 0.4 }}>
-                            <div style={{ width: 24, height: 24, borderRadius: "var(--bw-radius-circle)", background: "var(--bw-chip)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "var(--bw-content-disabled)" }}>{index + 1}</div>
-                            <span style={{ fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-disabled)" }}>---</span>
-                          </div>
-                        );
-                      }
-                      const evaluatedByList = evaluatorByProposal[team.id] || [];
-                      return (
-                        <div key={team.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--bw-space-2)", padding: "var(--bw-space-2) var(--bw-space-3)", borderRadius: "var(--bw-radius-md)", border: "1px solid var(--bw-border)" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)", minWidth: 0, flex: 1 }}>
-                            <div style={{ width: 24, height: 24, borderRadius: "var(--bw-radius-circle)", background: "var(--bw-chip)", color: "var(--bw-content-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "var(--bw-fw-medium)" as any, flexShrink: 0 }}>{index + 1}</div>
-                            <div style={{ minWidth: 0 }}>
-                              <p style={{ fontSize: "var(--bw-fs-sm)", fontWeight: "var(--bw-fw-medium)" as any, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{team.team_name}</p>
-                              {evaluatedByList.length > 0 && (
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
-                                  {evaluatedByList.map((name, i) => (
-                                    <span key={i} style={{ fontSize: "10px", color: "var(--bw-content-secondary)" }}>{name}{i < evaluatedByList.length - 1 ? "," : ""}</span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-2)", flexShrink: 0 }}>
-                            <span style={{ fontWeight: "var(--bw-fw-medium)" as any, fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-primary)" }}>{team.total_score}</span>
-                            {renderBreakdownDialog(team, <BarChart size={14} />, false)}
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
         <OnboardingModal 

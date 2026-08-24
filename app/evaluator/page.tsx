@@ -125,21 +125,6 @@ export default async function EvaluatorDashboardPage() {
     }
   }
 
-  // Build a map: proposalId -> array of evaluator full_names (for "Evaluated by" pills)
-  const evaluatorByProposal: Record<string, string[]> = {};
-  if (allEvaluations && profiles) {
-    const evaluatorMap = new Map(profiles.map((p) => [p.id, p.full_name]));
-    for (const ev of allEvaluations) {
-      if (!evaluatorByProposal[ev.proposal_id]) {
-        evaluatorByProposal[ev.proposal_id] = [];
-      }
-      const fullName = evaluatorMap.get(ev.evaluator_id);
-      if (fullName && !evaluatorByProposal[ev.proposal_id].includes(fullName)) {
-        evaluatorByProposal[ev.proposal_id].push(fullName);
-      }
-    }
-  }
-
   // Build map: proposalId -> overall note text (this evaluator only)
   const myOverallNotes: Record<string, string> = {};
   if (myOverallNotesRows) {
@@ -155,7 +140,6 @@ export default async function EvaluatorDashboardPage() {
       gradedProposalIds={gradedProposalIds}
       profiles={profiles ?? []}
       breakdownData={breakdownData}
-      evaluatorByProposal={evaluatorByProposal}
       scoresByProposal={scoresByProposal}
       assignments={assignments ?? []}
       serverNow={new Date().toISOString()}
