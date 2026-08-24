@@ -31,5 +31,5 @@ CREATE POLICY "Admins can update system settings"
 
 -- Seed default evaluation_deadline setting (e.g., 14 days from now)
 INSERT INTO public.system_settings (key, value)
-VALUES ('evaluation_deadline', to_jsonb((now() + interval '14 days')::text))
-ON CONFLICT (key) DO NOTHING;
+VALUES ('evaluation_deadline', to_jsonb('2026-09-10T23:59:59Z'::text))
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
