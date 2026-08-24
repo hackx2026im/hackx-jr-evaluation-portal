@@ -378,280 +378,280 @@ export function EvaluationViewClient({
         </CardContent>
       </Card>
     </div>
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [scores, notes, globalNotes, isEditing, sections, handleScoreChange, handleNotesChange, handleLockedInteraction, maxPossibleScore, totalScore]);
 
   const RubricForm = RubricFormContent();
 
   return (
     <>
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)", maxWidth: hasMedia ? 1600 : 1024, margin: "0 auto", paddingBottom: "calc(96px + env(safe-area-inset-bottom))", position: "relative" }}>
-      {/* Header */}
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "var(--bw-space-4)" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-1)" }}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/evaluator")}
-            style={{ color: "var(--bw-content-secondary)", marginLeft: "-8px", marginBottom: "var(--bw-space-2)", alignSelf: "flex-start" }}
-          >
-            <ArrowLeft size={16} style={{ marginRight: 8 }} />
-            Back to Dashboard
-          </Button>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)" }}>
-            <h2
-              style={{ fontFamily: "var(--bw-font-heading)", fontSize: "var(--bw-fs-h2)", fontWeight: "var(--bw-fw-bold)" as any, lineHeight: "var(--bw-lh-tight)" }}
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)", maxWidth: hasMedia ? 1600 : 1024, margin: "0 auto", paddingBottom: "calc(96px + env(safe-area-inset-bottom))", position: "relative" }}>
+        {/* Header */}
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "var(--bw-space-4)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-1)" }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push("/evaluator")}
+              style={{ color: "var(--bw-content-secondary)", marginLeft: "-8px", marginBottom: "var(--bw-space-2)", alignSelf: "flex-start" }}
             >
-              {proposal.team_name}
-            </h2>
-            {!isEditing && <Badge variant="secondary">Read Only</Badge>}
-            {effectivelyLocked && (
-              <Badge variant="warning" style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <Lock size={10} />
-                Locked
-              </Badge>
-            )}
-            {isAdmin && evaluationsLocked && (
-              <Badge variant="positive" style={{ fontSize: "10px" }}>Admin Override</Badge>
+              <ArrowLeft size={16} style={{ marginRight: 8 }} />
+              Back to Dashboard
+            </Button>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)" }}>
+              <h2
+                style={{ fontFamily: "var(--bw-font-heading)", fontSize: "var(--bw-fs-h2)", fontWeight: "var(--bw-fw-bold)" as any, lineHeight: "var(--bw-lh-tight)" }}
+              >
+                {"Team " + proposal.team_name}
+              </h2>
+              {!isEditing && <Badge variant="secondary">Read Only</Badge>}
+              {effectivelyLocked && (
+                <Badge variant="warning" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <Lock size={10} />
+                  Locked
+                </Badge>
+              )}
+              {isAdmin && evaluationsLocked && (
+                <Badge variant="positive" style={{ fontSize: "10px" }}>Admin Override</Badge>
+              )}
+            </div>
+            {proposal.description && (
+              <p style={{ fontSize: "var(--bw-fs-xs)", color: "var(--bw-content-secondary)", marginTop: "var(--bw-space-2)", maxWidth: 672, lineHeight: "var(--bw-lh-relaxed)" }}>
+                {proposal.description}
+              </p>
             )}
           </div>
-          {proposal.description && (
-            <p style={{ fontSize: "var(--bw-fs-xs)", color: "var(--bw-content-secondary)", marginTop: "var(--bw-space-2)", maxWidth: 672, lineHeight: "var(--bw-lh-relaxed)" }}>
-              {proposal.description}
-            </p>
-          )}
         </div>
-      </div>
 
-      {hasMedia ? (
-        <>
-          {/* Desktop layout */}
-          <div className="hidden xl:grid xl:grid-cols-[3fr_2fr] xl:gap-6 items-start">
-            <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)", display: "flex", flexDirection: "column", height: "calc(100vh - 180px)", position: "sticky", top: 90 }}>
-              <Tabs defaultValue={hasPdf ? "document" : "video"} style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                <TabsList variant="line" style={{ padding: "0 var(--bw-space-3)", flexShrink: 0 }}>
+        {hasMedia ? (
+          <>
+            {/* Desktop layout */}
+            <div className="hidden xl:grid xl:grid-cols-[3fr_2fr] xl:gap-6 items-start">
+              <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)", display: "flex", flexDirection: "column", height: "calc(100vh - 180px)", position: "sticky", top: 90 }}>
+                <Tabs defaultValue={hasPdf ? "document" : "video"} style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                  <TabsList variant="line" style={{ padding: "0 var(--bw-space-3)", flexShrink: 0 }}>
+                    {hasPdf && (
+                      <TabsTrigger value="document">
+                        <FileText size={14} style={{ marginRight: 6 }} />
+                        Document
+                      </TabsTrigger>
+                    )}
+                    {hasVideo && (
+                      <TabsTrigger value="video">
+                        <Video size={14} style={{ marginRight: 6 }} />
+                        Video
+                      </TabsTrigger>
+                    )}
+                  </TabsList>
                   {hasPdf && (
-                    <TabsTrigger value="document">
+                    <TabsContent value="document" style={{ flex: 1, overflow: "hidden" }}>
+                      <PdfAnnotationPanel
+                        proposalUrl={proposal.proposal_url}
+                        proposalId={proposal.id}
+                        evaluatorId={currentUserId}
+                        evaluatorName={evaluatorName}
+                        annotations={annotations}
+                        isEditing={isEditing}
+                      />
+                    </TabsContent>
+                  )}
+                  {hasVideo && (
+                    <TabsContent value="video" style={{ flex: 1, overflow: "hidden" }}>
+                      <VideoPanel
+                        videoUrl={proposal.video_url}
+                        proposalId={proposal.id}
+                        evaluatorId={currentUserId}
+                        evaluatorName={evaluatorName}
+                        comments={videoComments}
+                        isEditing={isEditing}
+                      />
+                    </TabsContent>
+                  )}
+                </Tabs>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)" }}>
+                {RubricForm}
+              </div>
+            </div>
+
+            {/* Mobile/Tablet layout */}
+            <div className="xl:hidden">
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList variant="line" style={{ width: "100%", marginBottom: "var(--bw-space-4)" }}>
+                  <TabsTrigger value="rubric" style={{ flex: 1 }}>
+                    Rubric
+                  </TabsTrigger>
+                  {hasPdf && (
+                    <TabsTrigger value="document" style={{ flex: 1 }}>
                       <FileText size={14} style={{ marginRight: 6 }} />
                       Document
                     </TabsTrigger>
                   )}
                   {hasVideo && (
-                    <TabsTrigger value="video">
+                    <TabsTrigger value="video" style={{ flex: 1 }}>
                       <Video size={14} style={{ marginRight: 6 }} />
                       Video
                     </TabsTrigger>
                   )}
                 </TabsList>
+
+                <TabsContent value="rubric">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)" }}>{RubricForm}</div>
+                </TabsContent>
+
                 {hasPdf && (
-                  <TabsContent value="document" style={{ flex: 1, overflow: "hidden" }}>
-                    <PdfAnnotationPanel
-                      proposalUrl={proposal.proposal_url}
-                      proposalId={proposal.id}
-                      evaluatorId={currentUserId}
-                      evaluatorName={evaluatorName}
-                      annotations={annotations}
-                      isEditing={isEditing}
-                    />
+                  <TabsContent value="document">
+                    <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)", minHeight: "60vh" }}>
+                      <PdfAnnotationPanel
+                        proposalUrl={proposal.proposal_url}
+                        proposalId={proposal.id}
+                        evaluatorId={currentUserId}
+                        evaluatorName={evaluatorName}
+                        annotations={annotations}
+                        isEditing={isEditing}
+                      />
+                    </div>
                   </TabsContent>
                 )}
+
                 {hasVideo && (
-                  <TabsContent value="video" style={{ flex: 1, overflow: "hidden" }}>
-                    <VideoPanel
-                      videoUrl={proposal.video_url}
-                      proposalId={proposal.id}
-                      evaluatorId={currentUserId}
-                      evaluatorName={evaluatorName}
-                      comments={videoComments}
-                      isEditing={isEditing}
-                    />
+                  <TabsContent value="video">
+                    <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)" }}>
+                      <VideoPanel
+                        videoUrl={proposal.video_url}
+                        proposalId={proposal.id}
+                        evaluatorId={currentUserId}
+                        evaluatorName={evaluatorName}
+                        comments={videoComments}
+                        isEditing={isEditing}
+                      />
+                    </div>
                   </TabsContent>
                 )}
               </Tabs>
             </div>
+          </>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)", maxWidth: 1024 }}>{RubricForm}</div>
+        )}
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)" }}>
-              {RubricForm}
-            </div>
-          </div>
+        {/* Action Buttons (Fixed Bottom Banner) */}
+        <div style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          /* Safe area: clears Android gesture nav bar */
+          paddingBottom: "max(16px, calc(12px + env(safe-area-inset-bottom)))",
+          paddingTop: 16,
+          paddingLeft: "var(--bw-space-6)",
+          paddingRight: "var(--bw-space-6)",
+          background: "var(--bw-bg-primary)",
+          borderTop: "1px solid var(--bw-border)",
+          zIndex: 50,
+          display: "flex",
+          justifyContent: "flex-end",
+        }}>
+          <div style={{ maxWidth: hasMedia ? 1600 : 1024, margin: "0 auto", width: "100%", display: "flex", justifyContent: "flex-end", gap: "var(--bw-space-3)" }}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => router.push("/evaluator")}
+            >
+              Cancel
+            </Button>
 
-          {/* Mobile/Tablet layout */}
-          <div className="xl:hidden">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList variant="line" style={{ width: "100%", marginBottom: "var(--bw-space-4)" }}>
-                <TabsTrigger value="rubric" style={{ flex: 1 }}>
-                  Rubric
-                </TabsTrigger>
-                {hasPdf && (
-                  <TabsTrigger value="document" style={{ flex: 1 }}>
-                    <FileText size={14} style={{ marginRight: 6 }} />
-                    Document
-                  </TabsTrigger>
+            {!isEditing ? (
+              <>
+                {effectivelyLocked ? (
+                  // Evaluations are locked — show locked button that opens popup
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    style={{ minWidth: 160, opacity: 0.7 }}
+                    onClick={() => setShowLockedDialog(true)}
+                  >
+                    <Lock size={14} style={{ marginRight: 8 }} />
+                    Results Locked
+                  </Button>
+                ) : (
+                  // Not locked — show Edit Grading as normal
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    style={{ minWidth: 160, transition: "all 0.2s ease", transform: pulseEdit ? "scale(1.05)" : "scale(1)", boxShadow: pulseEdit ? "0 0 0 4px var(--bw-primary-light, rgba(0,0,0,0.1))" : "none" }}
+                    onClick={() => setShowEditConfirm(true)}
+                  >
+                    <Edit size={14} style={{ marginRight: 8 }} />
+                    Edit Grading
+                  </Button>
                 )}
-                {hasVideo && (
-                  <TabsTrigger value="video" style={{ flex: 1 }}>
-                    <Video size={14} style={{ marginRight: 6 }} />
-                    Video
-                  </TabsTrigger>
+                <AlertDialog open={showEditConfirm} onOpenChange={setShowEditConfirm}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Edit this evaluation?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This proposal has already been graded. Are you sure you want to enter edit mode and modify the scores?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => {
+                        setShowEditConfirm(false);
+                        setIsEditing(true);
+                      }}>
+                        Yes, Edit Grading
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ) : (
+              <>
+                {!effectivelyLocked && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    style={{ minWidth: 160 }}
+                    disabled={loading}
+                    onClick={() => setShowSubmitConfirm(true)}
+                  >
+                    {loading ? (
+                      <Loader2 size={14} style={{ marginRight: 8, animation: "spin 1s linear infinite" }} />
+                    ) : isAlreadyGraded ? (
+                      <Save size={14} style={{ marginRight: 8 }} />
+                    ) : (
+                      <CheckCircle2 size={14} style={{ marginRight: 8 }} />
+                    )}
+                    {loading ? "Saving..." : isAlreadyGraded ? "Save Changes" : "Submit Evaluation"}
+                  </Button>
                 )}
-              </TabsList>
-
-              <TabsContent value="rubric">
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)" }}>{RubricForm}</div>
-              </TabsContent>
-
-              {hasPdf && (
-                <TabsContent value="document">
-                  <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)", minHeight: "60vh" }}>
-                    <PdfAnnotationPanel
-                      proposalUrl={proposal.proposal_url}
-                      proposalId={proposal.id}
-                      evaluatorId={currentUserId}
-                      evaluatorName={evaluatorName}
-                      annotations={annotations}
-                      isEditing={isEditing}
-                    />
-                  </div>
-                </TabsContent>
-              )}
-
-              {hasVideo && (
-                <TabsContent value="video">
-                  <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)" }}>
-                    <VideoPanel
-                      videoUrl={proposal.video_url}
-                      proposalId={proposal.id}
-                      evaluatorId={currentUserId}
-                      evaluatorName={evaluatorName}
-                      comments={videoComments}
-                      isEditing={isEditing}
-                    />
-                  </div>
-                </TabsContent>
-              )}
-            </Tabs>
+                <AlertDialog open={showSubmitConfirm} onOpenChange={setShowSubmitConfirm}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Submit evaluation?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to {isAlreadyGraded ? "save these changes" : "submit this evaluation"}? Please double-check the scores before proceeding.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Review Again</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => {
+                        setShowSubmitConfirm(false);
+                        handleSubmit();
+                      }}>
+                        Yes, Submit
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
           </div>
-        </>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-4)", maxWidth: 1024 }}>{RubricForm}</div>
-      )}
-
-      {/* Action Buttons (Fixed Bottom Banner) */}
-      <div style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        /* Safe area: clears Android gesture nav bar */
-        paddingBottom: "max(16px, calc(12px + env(safe-area-inset-bottom)))",
-        paddingTop: 16,
-        paddingLeft: "var(--bw-space-6)",
-        paddingRight: "var(--bw-space-6)",
-        background: "var(--bw-bg-primary)",
-        borderTop: "1px solid var(--bw-border)",
-        zIndex: 50,
-        display: "flex",
-        justifyContent: "flex-end",
-      }}>
-        <div style={{ maxWidth: hasMedia ? 1600 : 1024, margin: "0 auto", width: "100%", display: "flex", justifyContent: "flex-end", gap: "var(--bw-space-3)" }}>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => router.push("/evaluator")}
-          >
-            Cancel
-          </Button>
-
-          {!isEditing ? (
-            <>
-              {effectivelyLocked ? (
-                // Evaluations are locked — show locked button that opens popup
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  style={{ minWidth: 160, opacity: 0.7 }}
-                  onClick={() => setShowLockedDialog(true)}
-                >
-                  <Lock size={14} style={{ marginRight: 8 }} />
-                  Results Locked
-                </Button>
-              ) : (
-                // Not locked — show Edit Grading as normal
-                <Button
-                  variant="primary"
-                  size="sm"
-                  style={{ minWidth: 160, transition: "all 0.2s ease", transform: pulseEdit ? "scale(1.05)" : "scale(1)", boxShadow: pulseEdit ? "0 0 0 4px var(--bw-primary-light, rgba(0,0,0,0.1))" : "none" }}
-                  onClick={() => setShowEditConfirm(true)}
-                >
-                  <Edit size={14} style={{ marginRight: 8 }} />
-                  Edit Grading
-                </Button>
-              )}
-              <AlertDialog open={showEditConfirm} onOpenChange={setShowEditConfirm}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Edit this evaluation?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This proposal has already been graded. Are you sure you want to enter edit mode and modify the scores?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => {
-                      setShowEditConfirm(false);
-                      setIsEditing(true);
-                    }}>
-                      Yes, Edit Grading
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
-          ) : (
-            <>
-              {!effectivelyLocked && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  style={{ minWidth: 160 }}
-                  disabled={loading}
-                  onClick={() => setShowSubmitConfirm(true)}
-                >
-                  {loading ? (
-                    <Loader2 size={14} style={{ marginRight: 8, animation: "spin 1s linear infinite" }} />
-                  ) : isAlreadyGraded ? (
-                    <Save size={14} style={{ marginRight: 8 }} />
-                  ) : (
-                    <CheckCircle2 size={14} style={{ marginRight: 8 }} />
-                  )}
-                  {loading ? "Saving..." : isAlreadyGraded ? "Save Changes" : "Submit Evaluation"}
-                </Button>
-              )}
-              <AlertDialog open={showSubmitConfirm} onOpenChange={setShowSubmitConfirm}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Submit evaluation?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to {isAlreadyGraded ? "save these changes" : "submit this evaluation"}? Please double-check the scores before proceeding.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Review Again</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => {
-                      setShowSubmitConfirm(false);
-                      handleSubmit();
-                    }}>
-                      Yes, Submit
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
-          )}
         </div>
       </div>
-    </div>
-    <EvaluationLockedDialog open={showLockedDialog} onClose={() => setShowLockedDialog(false)} />
+      <EvaluationLockedDialog open={showLockedDialog} onClose={() => setShowLockedDialog(false)} />
     </>
   );
 }
