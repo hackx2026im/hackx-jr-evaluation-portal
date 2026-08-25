@@ -86,22 +86,8 @@ export default function LoginPage() {
           <img
             src="/hackxlogo.webp"
             alt="hackX jr Logo"
-            style={{ height: "64px", width: "auto", marginBottom: "var(--bw-space-6)" }}
+            style={{ height: "140px", width: "auto", marginBottom: "var(--bw-space-6)" }}
           />
-          <h1
-            style={{
-              fontFamily: "var(--bw-font-heading)",
-              fontSize: "var(--bw-fs-display)",
-              fontWeight: "var(--bw-fw-bold)" as any,
-              lineHeight: "var(--bw-lh-tight)",
-              color: "var(--bw-white)",
-              marginBottom: "var(--bw-space-4)",
-            }}
-          >
-            hackX
-            <br />
-            11.0
-          </h1>
           <p
             style={{
               fontSize: "var(--bw-fs-lg)",
@@ -110,9 +96,7 @@ export default function LoginPage() {
               maxWidth: 400,
             }}
           >
-            Evaluation portal for the lecture panel.
-            <br />
-            Grade proposals, review pitches, shape innovation.
+            Evaluation portal
           </p>
         </div>
       </div>
@@ -145,7 +129,7 @@ export default function LoginPage() {
             <img
               src="/hackxlogo.webp"
               alt="hackX jr Logo"
-              style={{ height: "48px", width: "auto", marginBottom: "var(--bw-space-3)", display: "inline-block" }}
+              style={{ height: "100px", width: "auto", marginBottom: "var(--bw-space-3)", display: "inline-block" }}
             />
             <h1
               style={{
