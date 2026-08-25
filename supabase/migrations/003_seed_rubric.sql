@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 003: Seed Rubric Data
 -- Run this AFTER 001 & 002 in the Supabase SQL Editor.
 -- ============================================================

@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 016: Secure Evaluation Lock (Server-Side)
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

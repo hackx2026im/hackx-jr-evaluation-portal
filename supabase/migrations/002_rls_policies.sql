@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 002: Row-Level Security Policies
 -- Run this AFTER 001_schema.sql in the Supabase SQL Editor.
 -- ============================================================

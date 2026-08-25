@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 001: Schema (Tables, Indexes, Triggers, Functions)
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

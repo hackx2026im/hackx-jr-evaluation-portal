@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 013: Evaluation Overall Notes
 -- Run this in the Supabase SQL Editor.
 -- ============================================================

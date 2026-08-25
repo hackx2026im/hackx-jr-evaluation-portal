@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 017: Rubric & Score Validation Constraints
 -- Run this LAST (after 001–016) in the Supabase SQL Editor.
 -- ============================================================

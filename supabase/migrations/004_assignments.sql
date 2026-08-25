@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 004: Proposal Assignment System
 -- Run this in the Supabase SQL Editor AFTER 001, 002, 003.
 -- ============================================================

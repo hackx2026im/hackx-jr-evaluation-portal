@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Rollback for Migration 008: Multiple Evaluator Assignments
 -- ============================================================
 

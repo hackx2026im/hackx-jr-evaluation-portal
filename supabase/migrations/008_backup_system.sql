@@ -1,5 +1,5 @@
 -- ===========================================================
--- hackX — Backup System SQL
+-- hackX jr 9.0 — Backup System SQL
 -- Run in the Supabase SQL Editor (once)
 -- ===========================================================
 

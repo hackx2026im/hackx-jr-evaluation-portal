@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- Migration 007: Update Rubric to New Grading Scheme
 -- Run this in the Supabase SQL Editor to update the existing rubric data.
 -- ============================================================

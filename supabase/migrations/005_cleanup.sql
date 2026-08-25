@@ -1,5 +1,5 @@
 -- ============================================================
--- hackX Evaluation Dashboard
+-- hackX jr 9.0 Evaluation Dashboard
 -- DB CLEANUP SCRIPT — Full reset for a fresh start
 -- ⚠️  WARNING: This is IRREVERSIBLE. Run in Supabase SQL Editor.
 -- ============================================================
