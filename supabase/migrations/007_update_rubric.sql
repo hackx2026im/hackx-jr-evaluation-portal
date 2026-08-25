@@ -107,4 +107,4 @@ VALUES (
   8
 ) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, max_score = EXCLUDED.max_score, grading_bands = EXCLUDED.grading_bands, order_index = EXCLUDED.order_index;
 
--- NOTE: Pitch Video (30 marks) has been removed for hackX jr.
+-- NOTE: Pitch Video (30 marks) has been removed for hackX jr 9.0.
