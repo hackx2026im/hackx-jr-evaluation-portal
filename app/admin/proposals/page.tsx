@@ -15,14 +15,14 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Upload, FileText, Type, Package, FileSpreadsheet, Download, Loader2 } from "lucide-react";
+import { Upload, FileText, Type, Package, FileSpreadsheet, Download, Loader2, Plus, X } from "lucide-react";
 import Papa from "papaparse";
 
 export default function UploadProposalsPage() {
   const [teamName, setTeamName] = useState("");
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
-  const [proposalUrl, setProposalUrl] = useState("");
+  const [proposalUrls, setProposalUrls] = useState<string[]>([""]);
   const [loading, setLoading] = useState(false);
   const [bulkLoading, setBulkLoading] = useState(false);
   
@@ -33,34 +33,42 @@ export default function UploadProposalsPage() {
   const handleSingleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!teamName || !proposalUrl) {
-      toast.error("Team Name and Proposal PDF Link are required");
+    const validUrls = proposalUrls.filter(url => url.trim() !== "");
+    if (!teamName || validUrls.length === 0) {
+      toast.error("Team Name and at least one Proposal PDF Link are required");
       return;
     }
 
     setLoading(true);
 
-    let finalProductName = productName;
-    if (!finalProductName) {
-      const { count, error: countError } = await supabase
-        .from("proposals")
-        .select("*", { count: "exact", head: true })
-        .eq("team_name", teamName);
-      
-      if (countError) {
-        toast.error("Failed to check existing proposals for team");
-        setLoading(false);
-        return;
-      }
-      finalProductName = `Proposal #${((count || 0) + 1).toString().padStart(2, '0')}`;
+    const { count, error: countError } = await supabase
+      .from("proposals")
+      .select("*", { count: "exact", head: true })
+      .eq("team_name", teamName);
+    
+    if (countError) {
+      toast.error("Failed to check existing proposals for team");
+      setLoading(false);
+      return;
     }
 
-    const { error } = await supabase.from("proposals").insert({
-      team_name: teamName,
-      product_name: finalProductName,
-      description,
-      proposal_url: proposalUrl,
+    const currentCount = count || 0;
+    const proposalsToInsert = validUrls.map((url, index) => {
+      let finalProductName = productName;
+      if (!finalProductName) {
+        finalProductName = `Proposal #${(currentCount + index + 1).toString().padStart(2, '0')}`;
+      } else if (validUrls.length > 1) {
+        finalProductName = `${productName} ${index + 1}`;
+      }
+      return {
+        team_name: teamName,
+        product_name: finalProductName,
+        description,
+        proposal_url: url,
+      };
     });
+
+    const { error } = await supabase.from("proposals").insert(proposalsToInsert);
 
     if (error) {
       toast.error(error.message);
@@ -68,17 +76,17 @@ export default function UploadProposalsPage() {
       return;
     }
 
-    toast.success("Proposal uploaded successfully!");
+    toast.success(`Successfully uploaded ${proposalsToInsert.length} proposal(s)!`);
     setTeamName("");
     setProductName("");
     setDescription("");
-    setProposalUrl("");
+    setProposalUrls([""]);
     router.refresh();
     setLoading(false);
   };
 
   const downloadTemplate = () => {
-    const templateContent = "team_name,product_name,description,drive_link\nExample Team,SmartLearn AI,An AI-powered learning system,https://drive.google.com/file/...";
+    const templateContent = "team_name,product_name,description,drive_link_1,drive_link_2,drive_link_3,drive_link_4,drive_link_5\nExample Team,SmartLearn AI,An AI-powered learning system,https://drive.google.com/file/...,,,,";
     const blob = new Blob([templateContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -113,14 +121,14 @@ export default function UploadProposalsPage() {
         const findHeader = (target: string) => headers.find(h => h.toLowerCase() === target.toLowerCase());
 
         const teamNameHeader = findHeader("team_name");
-        const driveLinkHeader = findHeader("drive_link");
+        const driveLinkHeaders = headers.filter(h => h.toLowerCase().startsWith("drive_link"));
         const productNameHeader = findHeader("product_name");
         const descriptionHeader = findHeader("description");
 
-        if (!teamNameHeader || !driveLinkHeader) {
+        if (!teamNameHeader || driveLinkHeaders.length === 0) {
           const missing = [];
           if (!teamNameHeader) missing.push("'team_name'");
-          if (!driveLinkHeader) missing.push("'drive_link'");
+          if (driveLinkHeaders.length === 0) missing.push("'drive_link_1'");
           toast.error(`Invalid CSV format. Missing required columns: ${missing.join(", ")}`);
           setBulkLoading(false);
           return;
@@ -136,28 +144,36 @@ export default function UploadProposalsPage() {
           const row = rows[i];
           const rowNum = i + 1;
           const teamName = row[teamNameHeader as string]?.trim();
-          const driveLink = row[driveLinkHeader as string]?.trim();
+          
+          const validLinks: string[] = [];
+          for (const header of driveLinkHeaders) {
+            const link = row[header]?.trim();
+            if (link) validLinks.push(link);
+          }
 
-          const missingFields = [];
-          if (!teamName) missingFields.push("team_name");
-          if (!driveLink) missingFields.push("drive_link");
-
-          if (missingFields.length > 0) {
-            errors.push(`Row ${rowNum}: Missing ${missingFields.join(", ")}`);
+          if (!teamName || validLinks.length === 0) {
+            errors.push(`Row ${rowNum}: Missing team_name or at least one drive_link`);
             continue;
           }
 
           if (!teamCounts[teamName]) teamCounts[teamName] = 0;
-          teamCounts[teamName]++;
 
-          const pName = row[productNameHeader as string]?.trim() || `Proposal #${teamCounts[teamName].toString().padStart(2, '0')}`;
+          for (let j = 0; j < validLinks.length; j++) {
+            teamCounts[teamName]++;
+            let pName = row[productNameHeader as string]?.trim();
+            if (!pName) {
+              pName = `Proposal #${teamCounts[teamName].toString().padStart(2, '0')}`;
+            } else if (validLinks.length > 1) {
+              pName = `${pName} ${j + 1}`;
+            }
 
-          proposalsToInsert.push({
-            team_name: teamName,
-            product_name: pName,
-            description: row[descriptionHeader as string]?.trim() || "",
-            proposal_url: driveLink,
-          });
+            proposalsToInsert.push({
+              team_name: teamName,
+              product_name: pName,
+              description: row[descriptionHeader as string]?.trim() || "",
+              proposal_url: validLinks[j],
+            });
+          }
         }
 
         if (errors.length > 0) {
@@ -247,20 +263,53 @@ export default function UploadProposalsPage() {
                 />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-2)" }}>
-                <Label htmlFor="proposal-pdf-url">Proposal PDF Link</Label>
-                <div style={{ position: "relative" }}>
-                  <FileText size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--bw-content-disabled)", pointerEvents: "none" }} />
-                  <Input
-                    id="proposal-pdf-url"
-                    placeholder="https://drive.google.com/file/d/..."
-                    value={proposalUrl}
-                    onChange={(e) => setProposalUrl(e.target.value)}
-                    type="url"
-                    required
-                    style={{ paddingLeft: 36 }}
-                    pill
-                  />
-                </div>
+                <Label>Proposal PDF Link(s)</Label>
+                {proposalUrls.map((url, index) => (
+                  <div key={index} style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-2)" }}>
+                    <div style={{ position: "relative", flex: 1 }}>
+                      <FileText size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--bw-content-disabled)", pointerEvents: "none" }} />
+                      <Input
+                        placeholder={`https://drive.google.com/file/d/... (Link ${index + 1})`}
+                        value={url}
+                        onChange={(e) => {
+                          const newUrls = [...proposalUrls];
+                          newUrls[index] = e.target.value;
+                          setProposalUrls(newUrls);
+                        }}
+                        type="url"
+                        required={index === 0}
+                        style={{ paddingLeft: 36 }}
+                        pill
+                      />
+                    </div>
+                    {proposalUrls.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          const newUrls = proposalUrls.filter((_, i) => i !== index);
+                          setProposalUrls(newUrls);
+                        }}
+                        style={{ flexShrink: 0, color: "var(--bw-content-secondary)" }}
+                      >
+                        <X size={16} />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                
+                {proposalUrls.length < 5 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setProposalUrls([...proposalUrls, ""])}
+                    style={{ alignSelf: "flex-start", marginTop: "var(--bw-space-1)", color: "var(--bw-content-secondary)" }}
+                  >
+                    <Plus size={14} style={{ marginRight: 6 }} /> Add another proposal link
+                  </Button>
+                )}
               </div>
               <Button
                 id="proposal-submit"
@@ -289,7 +338,7 @@ export default function UploadProposalsPage() {
               <ul style={{ fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)", paddingLeft: "var(--bw-space-4)", marginBottom: "var(--bw-space-4)", display: "flex", flexDirection: "column", gap: "var(--bw-space-1)", listStyleType: "disc" }}>
                 <li>Download the template below.</li>
                 <li>Fill in the rows without modifying the header row.</li>
-                <li>Mandatory fields: <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>team_name</span> and <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>drive_link</span>.</li>
+                <li>Mandatory fields: <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>team_name</span> and at least <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>drive_link_1</span>. You can include up to 5 links.</li>
                 <li><span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>product_name</span> and <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>description</span> are optional.</li>
                 <li>Save as a .csv file and upload.</li>
               </ul>
