@@ -100,7 +100,7 @@ END $$;
 -- ── DATA EXPORT VIEW ────────────────────────────────────────
 -- Use this view in the Supabase Table Editor to quickly inspect
 -- or export a snapshot of all critical data.
-CREATE OR REPLACE VIEW public.system_backup_data AS
+CREATE OR REPLACE VIEW public.system_backup_data WITH (security_invoker = true) AS
 SELECT 'proposals'           AS table_name, json_agg(p.*)  AS data FROM proposals p
 UNION ALL
 SELECT 'evaluations'         AS table_name, json_agg(e.*)  AS data FROM evaluations e
