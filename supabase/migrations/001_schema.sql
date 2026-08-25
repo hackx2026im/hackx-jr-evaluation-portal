@@ -76,10 +76,9 @@ CREATE INDEX idx_rubric_criteria_section ON public.rubric_criteria(section_id);
 CREATE TABLE public.proposals (
   id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   team_name     TEXT NOT NULL,
-  product_name  TEXT NOT NULL,
+  product_name  TEXT NOT NULL DEFAULT '',
   description   TEXT NOT NULL DEFAULT '',
   proposal_url  TEXT NOT NULL DEFAULT '',
-  video_url     TEXT NOT NULL DEFAULT '',
   locked_by     UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   locked_at     TIMESTAMPTZ,
   total_score   INT  NOT NULL DEFAULT 0,

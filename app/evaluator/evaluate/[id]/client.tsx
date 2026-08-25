@@ -39,9 +39,8 @@ import {
   Lock,
 } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
-import type { Proposal, RubricSection, Evaluation, PdfAnnotation, VideoComment } from "@/lib/types/database";
+import type { Proposal, RubricSection, Evaluation, PdfAnnotation } from "@/lib/types/database";
 import { PdfAnnotationPanel } from "@/components/pdf-annotation-panel";
-import { VideoPanel } from "@/components/video-panel";
 import { EvaluationLockedDialog } from "@/components/evaluation-locked-dialog";
 
 interface Props {
@@ -51,7 +50,6 @@ interface Props {
   currentUserId: string;
   serverNow?: string;
   annotations?: PdfAnnotation[];
-  videoComments?: VideoComment[];
   evaluatorName?: string;
   initialOverallNotes?: string;
   evaluationsLocked?: boolean;
@@ -74,7 +72,6 @@ export function EvaluationViewClient({
   currentUserId,
   serverNow = new Date().toISOString(),
   annotations = [],
-  videoComments = [],
   evaluatorName = "",
   initialOverallNotes = "",
   evaluationsLocked = false,
@@ -265,8 +262,7 @@ export function EvaluationViewClient({
   };
 
   const hasPdf = !!proposal.proposal_url;
-  const hasVideo = !!proposal.video_url;
-  const hasMedia = hasPdf || hasVideo;
+  const hasMedia = hasPdf;
 
   // ── Extracted as a stable inner component so each layout copy (desktop /
   // mobile) owns its own DOM tree with unique ids, and React can reconcile
@@ -428,18 +424,12 @@ export function EvaluationViewClient({
             {/* Desktop layout */}
             <div className="hidden xl:grid xl:grid-cols-[3fr_2fr] xl:gap-6 items-start">
               <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)", display: "flex", flexDirection: "column", height: "calc(100vh - 180px)", position: "sticky", top: 90 }}>
-                <Tabs defaultValue={hasPdf ? "document" : "video"} style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                <Tabs defaultValue="document" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                   <TabsList variant="line" style={{ padding: "0 var(--bw-space-3)", flexShrink: 0 }}>
                     {hasPdf && (
                       <TabsTrigger value="document">
                         <FileText size={14} style={{ marginRight: 6 }} />
                         Document
-                      </TabsTrigger>
-                    )}
-                    {hasVideo && (
-                      <TabsTrigger value="video">
-                        <Video size={14} style={{ marginRight: 6 }} />
-                        Video
                       </TabsTrigger>
                     )}
                   </TabsList>
@@ -451,18 +441,6 @@ export function EvaluationViewClient({
                         evaluatorId={currentUserId}
                         evaluatorName={evaluatorName}
                         annotations={annotations}
-                        isEditing={isEditing}
-                      />
-                    </TabsContent>
-                  )}
-                  {hasVideo && (
-                    <TabsContent value="video" style={{ flex: 1, overflow: "hidden" }}>
-                      <VideoPanel
-                        videoUrl={proposal.video_url}
-                        proposalId={proposal.id}
-                        evaluatorId={currentUserId}
-                        evaluatorName={evaluatorName}
-                        comments={videoComments}
                         isEditing={isEditing}
                       />
                     </TabsContent>
@@ -488,12 +466,6 @@ export function EvaluationViewClient({
                       Document
                     </TabsTrigger>
                   )}
-                  {hasVideo && (
-                    <TabsTrigger value="video" style={{ flex: 1 }}>
-                      <Video size={14} style={{ marginRight: 6 }} />
-                      Video
-                    </TabsTrigger>
-                  )}
                 </TabsList>
 
                 <TabsContent value="rubric">
@@ -509,21 +481,6 @@ export function EvaluationViewClient({
                         evaluatorId={currentUserId}
                         evaluatorName={evaluatorName}
                         annotations={annotations}
-                        isEditing={isEditing}
-                      />
-                    </div>
-                  </TabsContent>
-                )}
-
-                {hasVideo && (
-                  <TabsContent value="video">
-                    <div style={{ border: "1px solid var(--bw-border)", borderRadius: "var(--bw-radius-md)", overflow: "hidden", background: "var(--bw-chip)" }}>
-                      <VideoPanel
-                        videoUrl={proposal.video_url}
-                        proposalId={proposal.id}
-                        evaluatorId={currentUserId}
-                        evaluatorName={evaluatorName}
-                        comments={videoComments}
                         isEditing={isEditing}
                       />
                     </div>

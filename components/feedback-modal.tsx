@@ -228,7 +228,7 @@ export function FeedbackModal({
                   marginBottom: "var(--bw-space-3)",
                 }}
               >
-                HACKX 11.0
+                HACKX jr
               </p>
               <h2
                 id="feedback-title"
@@ -255,7 +255,7 @@ export function FeedbackModal({
               >
                 {existingFeedback?.overall_rating
                   ? "Update your thoughts below — every detail helps."
-                  : "You made hackX 11.0 possible. We would love to hear your thoughts on the portal — what worked, what didn't, and anything we can do better. This means a lot to us and will directly shape how we build for hackX and the upcoming hackX."}
+                  : "You made hackX jr possible. We would love to hear your thoughts on the portal — what worked, what didn't, and anything we can do better. This means a lot to us and will directly shape how we build for hackX jr and the upcoming hackX jr."}
               </p>
             </div>
 

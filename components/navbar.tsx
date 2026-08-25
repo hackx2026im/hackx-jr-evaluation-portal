@@ -108,7 +108,7 @@ export function Navbar({ fullName = "", role }: NavbarProps) {
       <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)" }}>
         <img 
           src="/Xlogo-favicon.png" 
-          alt="hackX 11.0 Logo" 
+          alt="hackX jr Logo" 
           style={{ height: "32px", width: "auto" }} 
         />
         <div>
@@ -120,7 +120,7 @@ export function Navbar({ fullName = "", role }: NavbarProps) {
               color: "var(--bw-content-primary)",
             }}
           >
-            hackX 11.0
+            hackX jr
           </span>
           {role && (
             <span

@@ -4,8 +4,8 @@ import { FeedbackPageClient } from "./client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Feedback | hackX 11.0",
-  description: "Share your thoughts on the hackX 11.0 evaluation portal.",
+  title: "Feedback | hackX jr",
+  description: "Share your thoughts on the hackX jr evaluation portal.",
 };
 
 export default async function FeedbackPage() {

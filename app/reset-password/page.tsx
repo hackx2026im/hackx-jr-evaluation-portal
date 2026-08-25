@@ -207,7 +207,7 @@ export default function ResetPasswordPage() {
                 lineHeight: "var(--bw-lh-tight)",
               }}
             >
-              hackX 11.0
+              hackX jr
             </h1>
           </div>
 
@@ -280,7 +280,7 @@ export default function ResetPasswordPage() {
           >
             Secured by Supabase Authentication.
             <br />
-            Always ensure you are on the official hackX portal.
+            Always ensure you are on the official hackX jr portal.
           </p>
         </div>
       </div>

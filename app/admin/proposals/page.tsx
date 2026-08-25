@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Upload, FileText, Video, Type, Package, FileSpreadsheet, Download, Loader2 } from "lucide-react";
+import { Upload, FileText, Type, Package, FileSpreadsheet, Download, Loader2 } from "lucide-react";
 import Papa from "papaparse";
 
 export default function UploadProposalsPage() {
@@ -23,7 +23,6 @@ export default function UploadProposalsPage() {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [proposalUrl, setProposalUrl] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [bulkLoading, setBulkLoading] = useState(false);
   
@@ -34,19 +33,33 @@ export default function UploadProposalsPage() {
   const handleSingleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!teamName || !proposalUrl || !videoUrl) {
-      toast.error("Team Name, Proposal PDF Link, and Pitch Video Link are required");
+    if (!teamName || !proposalUrl) {
+      toast.error("Team Name and Proposal PDF Link are required");
       return;
     }
 
     setLoading(true);
 
+    let finalProductName = productName;
+    if (!finalProductName) {
+      const { count, error: countError } = await supabase
+        .from("proposals")
+        .select("*", { count: "exact", head: true })
+        .eq("team_name", teamName);
+      
+      if (countError) {
+        toast.error("Failed to check existing proposals for team");
+        setLoading(false);
+        return;
+      }
+      finalProductName = `Proposal #${((count || 0) + 1).toString().padStart(2, '0')}`;
+    }
+
     const { error } = await supabase.from("proposals").insert({
       team_name: teamName,
-      product_name: productName || "Untitled Product",
+      product_name: finalProductName,
       description,
       proposal_url: proposalUrl,
-      video_url: videoUrl,
     });
 
     if (error) {
@@ -60,18 +73,17 @@ export default function UploadProposalsPage() {
     setProductName("");
     setDescription("");
     setProposalUrl("");
-    setVideoUrl("");
     router.refresh();
     setLoading(false);
   };
 
   const downloadTemplate = () => {
-    const templateContent = "team_name,product_name,description,drive_link,yt_link\nExample Team,SmartLearn AI,An AI-powered learning system,https://drive.google.com/file/...,https://youtube.com/watch?...";
+    const templateContent = "team_name,product_name,description,drive_link\nExample Team,SmartLearn AI,An AI-powered learning system,https://drive.google.com/file/...";
     const blob = new Blob([templateContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "hackX_proposals_template.csv");
+    link.setAttribute("download", "hackX_jr_proposals_template.csv");
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -102,15 +114,13 @@ export default function UploadProposalsPage() {
 
         const teamNameHeader = findHeader("team_name");
         const driveLinkHeader = findHeader("drive_link");
-        const ytLinkHeader = findHeader("yt_link");
         const productNameHeader = findHeader("product_name");
         const descriptionHeader = findHeader("description");
 
-        if (!teamNameHeader || !driveLinkHeader || !ytLinkHeader) {
+        if (!teamNameHeader || !driveLinkHeader) {
           const missing = [];
           if (!teamNameHeader) missing.push("'team_name'");
           if (!driveLinkHeader) missing.push("'drive_link'");
-          if (!ytLinkHeader) missing.push("'yt_link'");
           toast.error(`Invalid CSV format. Missing required columns: ${missing.join(", ")}`);
           setBulkLoading(false);
           return;
@@ -118,30 +128,35 @@ export default function UploadProposalsPage() {
 
         const proposalsToInsert = [];
         const errors: string[] = [];
+        
+        // Track local counts per team for auto-numbering within this batch
+        const teamCounts: Record<string, number> = {};
 
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
           const rowNum = i + 1;
           const teamName = row[teamNameHeader as string]?.trim();
           const driveLink = row[driveLinkHeader as string]?.trim();
-          const ytLink = row[ytLinkHeader as string]?.trim();
 
           const missingFields = [];
           if (!teamName) missingFields.push("team_name");
           if (!driveLink) missingFields.push("drive_link");
-          if (!ytLink) missingFields.push("yt_link");
 
           if (missingFields.length > 0) {
             errors.push(`Row ${rowNum}: Missing ${missingFields.join(", ")}`);
             continue;
           }
 
+          if (!teamCounts[teamName]) teamCounts[teamName] = 0;
+          teamCounts[teamName]++;
+
+          const pName = row[productNameHeader as string]?.trim() || `Proposal #${teamCounts[teamName].toString().padStart(2, '0')}`;
+
           proposalsToInsert.push({
             team_name: teamName,
-            product_name: row[productNameHeader as string]?.trim() || "Untitled Product",
+            product_name: pName,
             description: row[descriptionHeader as string]?.trim() || "",
             proposal_url: driveLink,
-            video_url: ytLink,
           });
         }
 
@@ -152,6 +167,8 @@ export default function UploadProposalsPage() {
           return;
         }
 
+        // Note: For a more robust implementation, we would fetch existing counts for all these teams first.
+        // For now, we assume the batch upload contains all proposals for the team if they are uploaded together.
         const { error } = await supabase.from("proposals").insert(proposalsToInsert);
 
         if (error) {
@@ -207,12 +224,12 @@ export default function UploadProposalsPage() {
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-2)" }}>
-                <Label htmlFor="proposal-product-name">Product Name</Label>
+                <Label htmlFor="proposal-product-name">Product Name (Optional)</Label>
                 <div style={{ position: "relative" }}>
                   <Package size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--bw-content-disabled)", pointerEvents: "none" }} />
                   <Input
                     id="proposal-product-name"
-                    placeholder="SmartLearn AI"
+                    placeholder="Leave blank for auto-numbering..."
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
                     style={{ paddingLeft: 36 }}
@@ -238,22 +255,6 @@ export default function UploadProposalsPage() {
                     placeholder="https://drive.google.com/file/d/..."
                     value={proposalUrl}
                     onChange={(e) => setProposalUrl(e.target.value)}
-                    type="url"
-                    required
-                    style={{ paddingLeft: 36 }}
-                    pill
-                  />
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "var(--bw-space-2)" }}>
-                <Label htmlFor="proposal-video-url">Pitch Video Link</Label>
-                <div style={{ position: "relative" }}>
-                  <Video size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--bw-content-disabled)", pointerEvents: "none" }} />
-                  <Input
-                    id="proposal-video-url"
-                    placeholder="https://youtube.com/watch?v=..."
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
                     type="url"
                     required
                     style={{ paddingLeft: 36 }}
@@ -288,7 +289,7 @@ export default function UploadProposalsPage() {
               <ul style={{ fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)", paddingLeft: "var(--bw-space-4)", marginBottom: "var(--bw-space-4)", display: "flex", flexDirection: "column", gap: "var(--bw-space-1)", listStyleType: "disc" }}>
                 <li>Download the template below.</li>
                 <li>Fill in the rows without modifying the header row.</li>
-                <li>Mandatory fields: <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>team_name</span>, <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>drive_link</span>, and <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>yt_link</span>.</li>
+                <li>Mandatory fields: <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>team_name</span> and <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>drive_link</span>.</li>
                 <li><span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>product_name</span> and <span style={{ fontWeight: "var(--bw-fw-medium)" as any, color: "var(--bw-content-primary)" }}>description</span> are optional.</li>
                 <li>Save as a .csv file and upload.</li>
               </ul>

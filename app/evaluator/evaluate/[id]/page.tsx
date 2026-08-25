@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = await createClient();
   const { data: proposal } = await supabase.from("proposals").select("team_name").eq("id", id).single();
   return {
-    title: proposal ? `Evaluate ${proposal.team_name} | hackX 11.0` : "Evaluate Proposal | hackX 11.0",
+    title: proposal ? `Evaluate ${proposal.team_name} | hackX jr` : "Evaluate Proposal | hackX jr",
   };
 }
 
@@ -32,7 +32,7 @@ export default async function EvaluationPage({ params }: PageProps) {
     { data: sections },
     { data: existingEvaluations },
     { data: annotations },
-    { data: videoComments },
+
     { data: profile },
     { data: overallNote },
     { data: lockSetting },
@@ -42,7 +42,7 @@ export default async function EvaluationPage({ params }: PageProps) {
     supabase.from("rubric_sections").select("*, criteria:rubric_criteria(*)").order("order_index", { ascending: true }),
     supabase.from("evaluations").select("*").eq("proposal_id", id).eq("evaluator_id", user.id),
     supabase.from("pdf_annotations").select("*").eq("proposal_id", id),
-    supabase.from("video_comments").select("*").eq("proposal_id", id),
+
     supabase.from("profiles").select("full_name, role").eq("id", user.id).single(),
     supabase.from("evaluation_overall_notes").select("notes").eq("proposal_id", id).eq("evaluator_id", user.id).maybeSingle(),
     supabase.from("system_settings").select("value").eq("key", "evaluations_locked").single(),
@@ -85,7 +85,7 @@ export default async function EvaluationPage({ params }: PageProps) {
       currentUserId={user.id}
       serverNow={new Date().toISOString()}
       annotations={annotations ?? []}
-      videoComments={videoComments ?? []}
+
       evaluatorName={profile?.full_name ?? ""}
       initialOverallNotes={overallNote?.notes ?? ""}
       evaluationsLocked={evaluationsLocked}

@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     // 5. Fetch the PDF server-side
     const pdfResponse = await fetch(downloadUrl, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; hackX-proxy/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; hackX-jr-proxy/1.0)",
       },
       redirect: "follow",
     });

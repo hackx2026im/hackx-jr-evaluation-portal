@@ -3,8 +3,8 @@ import { RubricEditorClient } from "./client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Rubric Editor | hackX 11.0",
-  description: "Manage the evaluation rubric for hackX 11.0",
+  title: "Rubric Editor | hackX jr",
+  description: "Manage the evaluation rubric for hackX jr",
 };
 
 export default async function AdminRubricPage() {

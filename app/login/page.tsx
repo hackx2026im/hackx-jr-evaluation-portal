@@ -85,7 +85,7 @@ export default function LoginPage() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <img
             src="/hackxlogo.webp"
-            alt="hackX 11.0 Logo"
+            alt="hackX jr Logo"
             style={{ height: "64px", width: "auto", marginBottom: "var(--bw-space-6)" }}
           />
           <h1
@@ -144,7 +144,7 @@ export default function LoginPage() {
           >
             <img
               src="/hackxlogo.webp"
-              alt="hackX 11.0 Logo"
+              alt="hackX jr Logo"
               style={{ height: "48px", width: "auto", marginBottom: "var(--bw-space-3)", display: "inline-block" }}
             />
             <h1
@@ -156,7 +156,7 @@ export default function LoginPage() {
                 lineHeight: "var(--bw-lh-tight)",
               }}
             >
-              hackX 11.0
+              hackX jr
             </h1>
             <p
               style={{

@@ -284,13 +284,7 @@ export function EvaluatorDashboardClient({
                   </Button>
                 </a>
               )}
-              {proposal.video_url && (
-                <a href={proposal.video_url} target="_blank" rel="noopener noreferrer">
-                  <Button variant="secondary" size="sm" style={{ width: "100%", justifyContent: "flex-start" }}>
-                    <ExternalLink size={14} style={{ marginRight: 8 }} /> Watch Pitch Video
-                  </Button>
-                </a>
-              )}
+
               {isGradedByMe && !evaluationsLocked && (
                 <Link href={`/evaluator/evaluate/${proposal.id}`}>
                   <Button size="sm" style={{ width: "100%", justifyContent: "flex-start", marginTop: "var(--bw-space-2)" }}>
@@ -311,7 +305,7 @@ export function EvaluatorDashboardClient({
         <div>
           <h2 style={{ fontFamily: "var(--bw-font-heading)", fontSize: "clamp(1.5rem, 5vw, var(--bw-fs-h1))", fontWeight: "var(--bw-fw-bold)" as any, lineHeight: "var(--bw-lh-tight)" }}>Evaluator Dashboard</h2>
           <p style={{ marginTop: "var(--bw-space-2)", fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)" }}>
-            Review and evaluate hackX 11.0 proposals
+            Review and evaluate hackX jr proposals
           </p>
         </div>
 
@@ -480,21 +474,7 @@ export function EvaluatorDashboardClient({
                                     <TooltipContent>View Proposal PDF</TooltipContent>
                                   </Tooltip>
                                 )}
-                                {proposal.video_url && (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <a
-                                        href={proposal.video_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{ display: "inline-flex", padding: 6, borderRadius: "var(--bw-radius-circle)", border: "1px solid var(--bw-border)", color: "var(--bw-content-secondary)", textDecoration: "none" }}
-                                      >
-                                        <ExternalLink size={14} />
-                                      </a>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Watch Pitch Video</TooltipContent>
-                                  </Tooltip>
-                                )}
+
                               </div>
                             </TableCell>
                             <TableCell>

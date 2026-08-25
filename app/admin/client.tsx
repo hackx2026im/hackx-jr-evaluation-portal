@@ -75,7 +75,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
       const a = document.createElement("a");
       const date = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `hackX-backup-${date}.json`;
+      a.download = `hackX-jr-backup-${date}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -108,20 +108,27 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     }
   };
 
-  const handleDownloadTop15 = () => {
-    const top15 = proposals
-      .filter((p) => p.is_graded)
-      .sort((a, b) => b.total_score - a.total_score)
-      .slice(0, 15);
+  const getTopTeams = () => {
+    const teamMaxes = new Map<string, Proposal>();
+    proposals.filter((p) => p.is_graded).forEach((p) => {
+      const existing = teamMaxes.get(p.team_name);
+      if (!existing || p.total_score > existing.total_score) {
+        teamMaxes.set(p.team_name, p);
+      }
+    });
+    return Array.from(teamMaxes.values()).sort((a, b) => b.total_score - a.total_score || a.team_name.localeCompare(b.team_name));
+  };
 
-    const headers = ["Rank", "Team Name", "Product Name", "Score", "Proposal Link", "Pitch Video Link"];
-    const rows = top15.map((p, i) => [
+  const handleDownloadTop35 = () => {
+    const top35 = getTopTeams().slice(0, 35);
+
+    const headers = ["Rank", "Team Name", "Product Name", "Score", "Proposal Link"];
+    const rows = top35.map((p, i) => [
       i + 1,
       `"${p.team_name.replace(/"/g, '""')}"`,
       `"${p.product_name.replace(/"/g, '""')}"`,
       p.total_score,
       p.proposal_url || "",
-      p.video_url || "",
     ]);
 
     const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -129,12 +136,12 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hackX-2026-top15.csv`;
+    a.download = `hackX-jr-2026-top35.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast.success("Top 15 CSV downloaded");
+    toast.success("Top 35 CSV downloaded");
   };
 
   const handleDownloadComments = () => {
@@ -250,7 +257,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hackX-2026-evaluator-comments.csv`;
+    a.download = `hackX-jr-2026-evaluator-comments.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -393,27 +400,23 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     return [headerRow, ...rows].join("\n");
   };
 
-  // ── Download Selected (Top 15) ────────────────────────────────────────────
+  // ── Download Selected (Top 35) ────────────────────────────────────────────
   const handleDownloadSelectedCSV = () => {
     if (rubricSections.length === 0) {
       toast.error("Rubric data not loaded — please refresh the page.");
       return;
     }
     // Stable sort: score desc, then team name asc as tiebreaker
-    const graded = [...proposals]
-      .filter((p) => p.is_graded)
-      .sort((a, b) =>
-        b.total_score - a.total_score || a.team_name.localeCompare(b.team_name)
-      );
-    const selected = graded.slice(0, 15);
+    const graded = getTopTeams();
+    const selected = graded.slice(0, 35);
     if (selected.length === 0) { toast.info("No graded proposals to export."); return; }
 
-    // Warn if there is a tie straddling the rank-15/16 boundary
+    // Warn if there is a tie straddling the rank-35/36 boundary
     const lastSelected = selected[selected.length - 1];
-    const firstRejected = graded[15];
+    const firstRejected = graded[35];
     if (firstRejected && lastSelected.total_score === firstRejected.total_score) {
       toast.warning(
-        `⚠️ Tie at rank 15/16: "${lastSelected.team_name}" and "${firstRejected.team_name}" both scored ${lastSelected.total_score}. Teams are split alphabetically — review manually.`,
+        `⚠️ Tie at rank 35/36: "${lastSelected.team_name}" and "${firstRejected.team_name}" both scored ${lastSelected.total_score}. Teams are split alphabetically — review manually.`,
         { duration: 8000 }
       );
     }
@@ -423,33 +426,29 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hackX-2026-selected-top15-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `hackX-jr-2026-selected-top35-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     toast.success(`Selected CSV downloaded — ${selected.length} proposals`);
   };
 
-  // ── Download Rejected (Rank 16+) ──────────────────────────────────────────
+  // ── Download Rejected (Rank 36+) ──────────────────────────────────────────
   const handleDownloadRejectedCSV = () => {
     if (rubricSections.length === 0) {
       toast.error("Rubric data not loaded — please refresh the page.");
       return;
     }
     // Same stable sort — must match selected to keep splits consistent
-    const graded = [...proposals]
-      .filter((p) => p.is_graded)
-      .sort((a, b) =>
-        b.total_score - a.total_score || a.team_name.localeCompare(b.team_name)
-      );
-    const rejected = graded.slice(15);
+    const graded = getTopTeams();
+    const rejected = graded.slice(35);
     if (rejected.length === 0) { toast.info("No non-selected proposals to export."); return; }
 
     // Warn if tie at boundary (mirror of selected handler)
-    const lastSelected = graded[14];
+    const lastSelected = graded[34];
     const firstRejected = rejected[0];
     if (lastSelected && firstRejected && lastSelected.total_score === firstRejected.total_score) {
       toast.warning(
-        `⚠️ Tie at rank 15/16: "${lastSelected.team_name}" and "${firstRejected.team_name}" both scored ${lastSelected.total_score}. Teams are split alphabetically — review manually.`,
+        `⚠️ Tie at rank 35/36: "${lastSelected.team_name}" and "${firstRejected.team_name}" both scored ${lastSelected.total_score}. Teams are split alphabetically — review manually.`,
         { duration: 8000 }
       );
     }
@@ -459,7 +458,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hackX-2026-rejected-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `hackX-jr-2026-rejected-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     toast.success(`Rejected CSV downloaded — ${rejected.length} proposals`);
@@ -500,10 +499,16 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
   }, [proposals, searchQuery]);
 
   const topTeams = useMemo(() => {
-    return proposals
-      .filter((p) => p.is_graded)
-      .sort((a, b) => b.total_score - a.total_score)
-      .slice(0, 15);
+    const teamMaxes = new Map<string, Proposal>();
+    proposals.filter((p) => p.is_graded).forEach((p) => {
+      const existing = teamMaxes.get(p.team_name);
+      if (!existing || p.total_score > existing.total_score) {
+        teamMaxes.set(p.team_name, p);
+      }
+    });
+    return Array.from(teamMaxes.values())
+      .sort((a, b) => b.total_score - a.total_score || a.team_name.localeCompare(b.team_name))
+      .slice(0, 35);
   }, [proposals]);
 
   const handleDeleteProposal = async () => {
@@ -710,13 +715,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
                   </Button>
                 </a>
               )}
-              {proposal.video_url && (
-                <a href={proposal.video_url} target="_blank" rel="noopener noreferrer">
-                  <Button variant="secondary" size="sm" style={{ width: "100%", justifyContent: "flex-start" }}>
-                    <ExternalLink size={14} style={{ marginRight: 8 }} /> Watch Pitch Video
-                  </Button>
-                </a>
-              )}
+
               {/* Admin can always edit any evaluation — bypasses lock */}
               <Link href={`/evaluator/evaluate/${proposal.id}?admin_override=1`}>
                 <Button variant="primary" size="sm" style={{ width: "100%", justifyContent: "flex-start", marginTop: "var(--bw-space-2)" }}>
@@ -739,7 +738,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
             Dashboard
           </h2>
           <p style={{ marginTop: "var(--bw-space-2)", fontSize: "var(--bw-fs-sm)", color: "var(--bw-content-secondary)" }}>
-            Overview of all hackX 11.0 proposals
+            Overview of all hackX jr proposals
           </p>
         </div>
         {/* Header action buttons */}
@@ -773,9 +772,9 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
             {isTogglingLock ? "Updating..." : lockState ? "Unlock Evaluations" : "Lock Evaluations"}
           </button>
 
-          {/* Top 15 CSV download */}
+          {/* Top 35 CSV download */}
           <button
-            onClick={handleDownloadTop15}
+            onClick={handleDownloadTop35}
             className="bw-button"
             style={{
               display: "flex",
@@ -795,7 +794,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
             }}
           >
             <FileDown size={14} />
-            Top 15 CSV
+            Top 35 CSV
           </button>
 
           {/* Evaluator Comments CSV */}
@@ -823,7 +822,7 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
             Comments CSV
           </button>
 
-          {/* Selected (Top 15) Email CSV */}
+          {/* Selected (Top 35) Email CSV */}
           <button
             onClick={handleDownloadSelectedCSV}
             className="bw-button"
@@ -1031,13 +1030,13 @@ export function AdminDashboardClient({ proposals, breakdownData = {}, evaluators
           </CardContent>
         </Card>
 
-        {/* Top 15 Leaderboard */}
+        {/* Top 35 Leaderboard */}
         <div style={{ position: "sticky", top: "calc(var(--bw-nav-height) + var(--bw-space-6))", alignSelf: "start", maxHeight: "calc(100vh - var(--bw-nav-height) - var(--bw-space-12))", overflowY: "auto" }} className="hidden xl:block">
           <Card variant="flat" style={{ display: "flex", flexDirection: "column" }}>
             <CardHeader style={{ padding: "var(--bw-space-6)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-2)" }}>
                 <Trophy size={18} style={{ color: "var(--bw-warning)" }} />
-                <CardTitle style={{ fontSize: "var(--bw-fs-h4)" }}>Top 15 Teams</CardTitle>
+                <CardTitle style={{ fontSize: "var(--bw-fs-h4)" }}>Top 35 Teams</CardTitle>
               </div>
             </CardHeader>
             <CardContent style={{ padding: "0 var(--bw-space-6) var(--bw-space-6)" }}>

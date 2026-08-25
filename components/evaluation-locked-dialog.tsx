@@ -86,7 +86,7 @@ export function EvaluationLockedDialog({ open, onClose }: Props) {
             <strong style={{ color: "var(--bw-content-primary)" }}>
               Thank you so much for your time and effort!
             </strong>{" "}
-            Your contributions to hackX 11.0 are truly valued.
+            Your contributions to hackX jr are truly valued.
           </p>
 
           <p

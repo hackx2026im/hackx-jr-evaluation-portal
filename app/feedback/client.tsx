@@ -127,7 +127,7 @@ export function FeedbackPageClient({ currentUserId, existingFeedback }: Props) {
                 color: "var(--bw-content-primary)",
               }}
             >
-              hackX 11.0
+              hackX jr
             </span>
           </div>
           <Link
@@ -187,7 +187,7 @@ export function FeedbackPageClient({ currentUserId, existingFeedback }: Props) {
                     margin: "0 auto",
                   }}
                 >
-                  Thank you for being part of hackX 11.0. We really appreciate it.
+                  Thank you for being part of hackX jr. We really appreciate it.
                 </p>
               </div>
 
@@ -278,7 +278,7 @@ export function FeedbackPageClient({ currentUserId, existingFeedback }: Props) {
               >
                 {editing
                   ? "Update your thoughts below — every detail helps."
-                  : "You made hackX 11.0 possible. We would love to hear your thoughts on the portal — what worked, what didn't, and anything we can do better. This means a lot to us and will directly shape how we build for hackX and the upcoming hackX."}
+                  : "You made hackX jr possible. We would love to hear your thoughts on the portal — what worked, what didn't, and anything we can do better. This means a lot to us and will directly shape how we build for hackX jr and the upcoming hackX jr."}
               </p>
 
               <div style={{ height: 1, background: "var(--bw-border)", marginBottom: "var(--bw-space-6)" }} />

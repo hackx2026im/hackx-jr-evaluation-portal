@@ -3,9 +3,9 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "hackX 11.0 — Evaluation Dashboard",
+  title: "hackX jr — Evaluation Dashboard",
   description:
-    "Evaluation portal for the hackX 11.0 lecture panel.",
+    "Evaluation portal for the hackX jr lecture panel.",
 };
 
 export default function RootLayout({

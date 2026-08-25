@@ -4,8 +4,8 @@ import { Navbar } from "@/components/navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Evaluator Dashboard | hackX 11.0",
-  description: "Evaluate hackX 11.0 proposals",
+  title: "Evaluator Dashboard | hackX jr",
+  description: "Evaluate hackX jr proposals",
 };
 
 export default async function EvaluatorLayout({

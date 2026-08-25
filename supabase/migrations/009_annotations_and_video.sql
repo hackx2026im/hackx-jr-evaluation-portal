@@ -52,42 +52,4 @@ CREATE POLICY "annotations_delete"
   ON public.pdf_annotations FOR DELETE TO authenticated
   USING (evaluator_id = auth.uid());
 
--- ============================================================
--- 2. VIDEO TIMESTAMP COMMENTS
--- ============================================================
-CREATE TABLE public.video_comments (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  proposal_id     UUID NOT NULL REFERENCES public.proposals(id) ON DELETE CASCADE,
-  evaluator_id    UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  timestamp_secs  FLOAT NOT NULL,
-  comment         TEXT NOT NULL,
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT check_timestamp_positive CHECK (timestamp_secs >= 0)
-);
-
-COMMENT ON TABLE public.video_comments IS 'Evaluator timestamped comments on pitch videos.';
-
-CREATE INDEX idx_video_comments_proposal ON public.video_comments(proposal_id);
-CREATE INDEX idx_video_comments_evaluator ON public.video_comments(evaluator_id);
-
--- RLS
-ALTER TABLE public.video_comments ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "video_comments_select"
-  ON public.video_comments FOR SELECT TO authenticated
-  USING ((SELECT public.get_user_role()) IN ('admin', 'evaluator'));
-
-CREATE POLICY "video_comments_insert"
-  ON public.video_comments FOR INSERT TO authenticated
-  WITH CHECK (evaluator_id = auth.uid());
-
-CREATE POLICY "video_comments_update"
-  ON public.video_comments FOR UPDATE TO authenticated
-  USING (evaluator_id = auth.uid())
-  WITH CHECK (evaluator_id = auth.uid());
-
-CREATE POLICY "video_comments_delete"
-  ON public.video_comments FOR DELETE TO authenticated
-  USING (evaluator_id = auth.uid());
