@@ -105,6 +105,4 @@ SELECT 'proposals'           AS table_name, json_agg(p.*)  AS data FROM proposal
 UNION ALL
 SELECT 'evaluations'         AS table_name, json_agg(e.*)  AS data FROM evaluations e
 UNION ALL
-SELECT 'profiles'            AS table_name, json_agg(pr.*) AS data FROM profiles pr
-UNION ALL
-SELECT 'proposal_assignments' AS table_name, json_agg(a.*) AS data FROM proposal_assignments a;
+SELECT 'profiles'            AS table_name, json_agg(pr.*) AS data FROM profiles pr;
