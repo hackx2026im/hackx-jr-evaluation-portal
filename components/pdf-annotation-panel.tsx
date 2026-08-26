@@ -25,7 +25,10 @@ import {
 } from "lucide-react";
 import type { PdfAnnotation } from "@/lib/types/database";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Served from /public (copied at install time by scripts/copy-pdf-worker.js)
+// instead of an unpinned, no-SRI unpkg.com CDN URL — if that CDN is ever
+// unreachable, PDF viewing would break app-wide.
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 const EVALUATOR_COLORS = [
   "#FFEB3B", "#81D4FA", "#A5D6A7", "#CE93D8",

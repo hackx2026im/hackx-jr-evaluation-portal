@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Lock, MessageCircle } from "lucide-react";
+import { Lock } from "lucide-react";
 
 interface Props {
   open: boolean;

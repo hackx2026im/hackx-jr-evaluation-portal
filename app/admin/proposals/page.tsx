@@ -185,16 +185,34 @@ export default function UploadProposalsPage() {
 
         // Note: For a more robust implementation, we would fetch existing counts for all these teams first.
         // For now, we assume the batch upload contains all proposals for the team if they are uploaded together.
-        const { error } = await supabase.from("proposals").insert(proposalsToInsert);
+        // Chunk the insert so a very large CSV doesn't hit Supabase's request
+        // payload limit in a single call.
+        const CHUNK_SIZE = 500;
+        let insertedCount = 0;
+        let chunkError: string | null = null;
 
-        if (error) {
-          toast.error(error.message);
+        for (let i = 0; i < proposalsToInsert.length; i += CHUNK_SIZE) {
+          const chunk = proposalsToInsert.slice(i, i + CHUNK_SIZE);
+          const { error } = await supabase.from("proposals").insert(chunk);
+          if (error) {
+            chunkError = error.message;
+            break;
+          }
+          insertedCount += chunk.length;
+        }
+
+        if (chunkError) {
+          toast.error(
+            insertedCount > 0
+              ? `Uploaded ${insertedCount} of ${proposalsToInsert.length} before failing: ${chunkError}`
+              : chunkError
+          );
         } else {
-          toast.success(`Successfully uploaded ${proposalsToInsert.length} proposals!`);
+          toast.success(`Successfully uploaded ${insertedCount} proposals!`);
           if (fileInputRef.current) fileInputRef.current.value = "";
           router.refresh();
         }
-        
+
         setBulkLoading(false);
       },
       error: (error) => {

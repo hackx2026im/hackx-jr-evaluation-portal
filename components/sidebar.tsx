@@ -8,7 +8,6 @@ import {
   Users,
   Upload,
   ClipboardList,
-  Menu,
   X,
   Settings,
   MessageSquare,

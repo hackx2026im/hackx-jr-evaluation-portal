@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "./theme-toggle";
@@ -106,10 +107,13 @@ export function Navbar({ fullName = "", role }: NavbarProps) {
     >
       {/* Brand */}
       <div style={{ display: "flex", alignItems: "center", gap: "var(--bw-space-3)" }}>
-        <img 
-          src="/Xlogo-favicon.png" 
-          alt="hackX jr Logo" 
-          style={{ height: "32px", width: "auto" }} 
+        <Image
+          src="/Xlogo-favicon.png"
+          alt="hackX jr Logo"
+          width={32}
+          height={32}
+          priority
+          style={{ height: "32px", width: "auto" }}
         />
         <div>
           <span
