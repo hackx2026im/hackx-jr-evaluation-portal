@@ -152,7 +152,6 @@ export function OnboardingModal({
   isPreview = false,
 }: OnboardingModalProps) {
   const [step, setStep] = useState(0);
-  const [imgFailed, setImgFailed] = useState(false);
   const supabase = createClient();
 
   if (!isOpen) return null;
@@ -178,7 +177,6 @@ export function OnboardingModal({
 
   const handleNext = () => {
     if (step < TOTAL_STEPS - 1) {
-      setImgFailed(false);
       setStep((s) => s + 1);
     } else {
       handleClose();
@@ -187,7 +185,6 @@ export function OnboardingModal({
 
   const handleBack = () => {
     if (step > 0) {
-      setImgFailed(false);
       setStep((s) => s - 1);
     }
   };
@@ -209,8 +206,7 @@ export function OnboardingModal({
         a flex-parent's items-end on Android Chrome.
 
         Mobile  (<sm): pinned to bottom via bottom-0 inset-x-0, sheet style
-        Tablet  (sm–md): centred with translate trick, max-w-lg, card style
-        Desktop (md+): centred, max-w-[860px], two-column layout
+        Tablet+ (sm+): centred with translate trick, max-w-lg, card style
       */}
       <div
         className={[
@@ -222,9 +218,7 @@ export function OnboardingModal({
           "sm:inset-auto sm:bottom-auto",
           "sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
           "sm:max-w-lg sm:rounded-2xl",
-          // md+: wider two-column
-          "md:max-w-[860px]",
-          "flex flex-col md:flex-row md:items-stretch",
+          "flex flex-col",
         ].join(" ")}
         style={{
           background: "var(--bw-bg-primary)",
@@ -275,47 +269,12 @@ export function OnboardingModal({
         </button>
 
         {/*
-          ── Image panel ──
-          Visible on mobile and desktop. Fixed smaller height on mobile.
-        */}
-        <div
-          className="flex w-full h-[200px] md:h-auto md:w-[40%] items-center justify-center relative overflow-hidden shrink-0"
-          style={{
-            background: "var(--bw-bg-secondary)",
-            borderRadius: "var(--bw-radius-md) var(--bw-radius-md) 0 0",
-            borderBottom: "1px solid var(--bw-border)",
-          }}
-        >
-          {imgFailed ? (
-            <span
-              style={{
-                fontSize: "var(--bw-fs-xs)",
-                fontWeight: "var(--bw-fw-bold)",
-                letterSpacing: "0.05em",
-                color: "var(--bw-content-disabled)",
-                textTransform: "uppercase",
-              }}
-            >
-              onboard{n}.png
-            </span>
-          ) : (
-            <img
-              key={`slide-img-${step}`}
-              src={`/onboarding/onboard${n}.png`}
-              alt=""
-              onError={() => setImgFailed(true)}
-              className="w-full h-full object-cover"
-            />
-          )}
-        </div>
-
-        {/*
-          ── Right / main content panel ──
-          Full-width on mobile, 60% on desktop.
+          ── Content panel ──
+          Full-width on all breakpoints now that the image panel is removed.
           Padding is larger on desktop, compact on mobile.
         */}
         <div
-          className="flex flex-col justify-between w-full md:w-[60%]"
+          className="flex flex-col justify-between w-full"
           style={{
             /* clamp gives comfortable padding on any screen width */
             padding: "clamp(20px, 5vw, 32px)",
