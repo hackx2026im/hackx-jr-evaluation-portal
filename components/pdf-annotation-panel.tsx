@@ -36,7 +36,6 @@ interface Props {
   proposalUrl: string;
   proposalId: string;
   evaluatorId: string;
-  evaluatorName: string;
   annotations: PdfAnnotation[];
   isEditing?: boolean;
 }
@@ -45,7 +44,6 @@ export function PdfAnnotationPanel({
   proposalUrl,
   proposalId,
   evaluatorId,
-  evaluatorName,
   annotations: initialAnnotations,
   isEditing = true,
 }: Props) {
@@ -73,12 +71,12 @@ export function PdfAnnotationPanel({
     setNumPages(numPages);
     setPdfLoading(false);
     setPdfError(null);
-  }, []);
+  }, [setNumPages, setPdfLoading, setPdfError]);
 
   const onDocumentLoadError = useCallback((error: Error) => {
     setPdfError(error.message || "Failed to load PDF");
     setPdfLoading(false);
-  }, []);
+  }, [setPdfError, setPdfLoading]);
 
   // Zoom controls
   const zoomIn = () => setScale((s) => Math.min(3.0, s + 0.25));

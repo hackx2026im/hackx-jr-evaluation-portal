@@ -164,6 +164,15 @@ export function RubricEditorClient({
     field: keyof Criterion,
     value: any
   ) => {
+    // Capture the previous max_score before it's overwritten so we can
+    // tell afterward whether it was actually lowered.
+    const prevMaxScore =
+      field === "max_score"
+        ? sections
+            .find((s) => s.id === sectionId)
+            ?.rubric_criteria.find((c) => c.id === criterionId)?.max_score
+        : undefined;
+
     markSaving(criterionId);
     const { error } = await supabase
       .from("rubric_criteria")
@@ -187,6 +196,24 @@ export function RubricEditorClient({
           : s
       )
     );
+
+    // Lowering max_score doesn't retroactively touch already-recorded
+    // scores — flag any that now exceed the new max so an admin can
+    // review them manually, rather than silently leaving stale data.
+    if (field === "max_score" && prevMaxScore !== undefined && value < prevMaxScore) {
+      const { count, error: countError } = await supabase
+        .from("evaluations")
+        .select("id", { count: "exact", head: true })
+        .eq("rubric_criterion_id", criterionId)
+        .gt("score", value);
+
+      if (!countError && count && count > 0) {
+        toast.warning(
+          `${count} existing evaluation${count === 1 ? "" : "s"} now score above the new max (${value}) for this criterion — review before finalizing results.`
+        );
+      }
+    }
+
     return true;
   };
 

@@ -10,6 +10,16 @@ export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-backup-secret");
   const expected = process.env.BACKUP_SECRET;
 
+  if (!expected) {
+    // Misconfiguration, not a normal state — the cron job can never
+    // authenticate without this, and every call silently falls through
+    // to the admin-session check below. Log loudly so it doesn't go
+    // unnoticed.
+    console.error(
+      "[nightly-backup] BACKUP_SECRET is not set. The cron job cannot authenticate; only manual admin-triggered backups will work until this is configured."
+    );
+  }
+
   if (!expected || secret !== expected) {
     // Also allow an authenticated admin to trigger manually
     const supabase = await createClient();

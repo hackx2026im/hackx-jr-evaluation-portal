@@ -444,7 +444,6 @@ export function EvaluationViewClient({
                         proposalUrl={proposal.proposal_url}
                         proposalId={proposal.id}
                         evaluatorId={currentUserId}
-                        evaluatorName={evaluatorName}
                         annotations={annotations}
                         isEditing={isEditing}
                       />
@@ -484,7 +483,6 @@ export function EvaluationViewClient({
                         proposalUrl={proposal.proposal_url}
                         proposalId={proposal.id}
                         evaluatorId={currentUserId}
-                        evaluatorName={evaluatorName}
                         annotations={annotations}
                         isEditing={isEditing}
                       />

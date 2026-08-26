@@ -5,22 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function isLockedByOther(
-  lockedBy: string | null,
-  lockedAt: string | null,
-  currentUserId: string,
-  serverNow?: string
-) {
-  if (!lockedBy || lockedBy === currentUserId) return false;
-  if (!lockedAt) return false;
-
-  const lockTime = new Date(lockedAt).getTime();
-  const now = serverNow ? new Date(serverNow).getTime() : new Date().getTime();
-  const twoHoursInMs = 2 * 60 * 60 * 1000;
-
-  return now - lockTime < twoHoursInMs;
-}
-
 export function timeAgo(date: string | Date) {
   const now = new Date().getTime();
   const past = new Date(date).getTime();
