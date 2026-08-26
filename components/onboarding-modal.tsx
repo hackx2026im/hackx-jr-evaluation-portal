@@ -24,7 +24,7 @@ interface Slide {
 
 const SLIDES: Slide[] = [
   {
-    eyebrow: "HACKX jr",
+    eyebrow: "hackX jr 9.0",
     heading: "Welcome.",
     body: (
       <div className="space-y-4">
@@ -42,11 +42,6 @@ const SLIDES: Slide[] = [
         <p>
           The dashboard shows your total assigned proposals, how many are still
           ungraded, and the days remaining until the deadline.
-        </p>
-        <p>
-          The Top 15 panel on the right reflects the live leaderboard based on
-          combined averages across all evaluators — it updates automatically as
-          evaluations are submitted.
         </p>
       </div>
     ),
@@ -81,7 +76,7 @@ const SLIDES: Slide[] = [
         </p>
         <p>
           The Evaluate action only appears for proposals directly assigned to
-          you. Use the Graded only toggle or the All Evaluators filter to narrow
+          you. Use the Graded-only toggle or the All Evaluators filter to narrow
           the view.
         </p>
       </div>
@@ -94,8 +89,8 @@ const SLIDES: Slide[] = [
       <div className="space-y-4">
         <p>
           Opening a proposal loads the PDF viewer alongside the scoring panel.
-          Evaluations are split into two sections — Proposal (70 marks) and
-          Pitch Video (30 marks).
+          Each proposal is evaluated using a rubric, with every criterion
+          accompanied by a description to guide your evaluation.
         </p>
         <div className="flex flex-wrap gap-2" style={{ margin: "var(--bw-space-4) 0" }}>
           {["Excellent", "Good", "Developing", "Weak"].map((label) => (
@@ -117,47 +112,8 @@ const SLIDES: Slide[] = [
         </div>
         <p>
           Enter the mark directly into the field for each criterion. The grade
-          band labels show you what range corresponds to each performance level.
-        </p>
-      </div>
-    ),
-  },
-  {
-    eyebrow: "FINAL RANKINGS",
-    heading: "Determined by combined averages.",
-    body: (
-      <div className="space-y-4">
-        <p>
-          Each proposal is reviewed by two evaluators. The final score is the
-          average of both evaluators&apos; total marks. Individual scores are not
-          visible across the panel — only the combined average appears in the
-          leaderboard.
-        </p>
-        <div
-          className="flex gap-3 rounded-xl"
-          style={{
-            padding: "var(--bw-space-4)",
-            background: "var(--bw-warning-bg)",
-            border: "1px solid var(--bw-warning)",
-            color: "var(--bw-warning)",
-          }}
-        >
-          <span className="text-xl leading-none shrink-0 mt-0.5">⚠️</span>
-          <p className="text-[14px] leading-snug font-medium">
-            Rankings shift as remaining evaluations come in. Final standings are
-            confirmed only once all evaluations are closed.
-          </p>
-        </div>
-        <p
-          style={{
-            fontSize: "var(--bw-fs-sm)",
-            lineHeight: "var(--bw-lh-relaxed)",
-            color: "var(--bw-content-secondary)",
-          }}
-        >
-          If a result warrants discussion — an outlier, a borderline team, or a
-          scoring misalignment — coordinate directly with your co-evaluator to
-          reach a consensus.
+          band labels show you the mark range corresponding to each performance
+          level.
         </p>
       </div>
     ),
@@ -340,12 +296,12 @@ export function OnboardingModal({
                 textTransform: "uppercase",
               }}
             >
-              onboard{n}.gif
+              onboard{n}.png
             </span>
           ) : (
             <img
               key={`slide-img-${step}`}
-              src={`/onboarding/onboard${n}.gif`}
+              src={`/onboarding/onboard${n}.png`}
               alt=""
               onError={() => setImgFailed(true)}
               className="w-full h-full object-cover"
