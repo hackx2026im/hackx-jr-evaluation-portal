@@ -27,6 +27,7 @@ export default async function EvaluatorLayout({
     .single();
 
   if (!profile) redirect("/login");
+  if (profile.role === "admin") redirect("/admin");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>

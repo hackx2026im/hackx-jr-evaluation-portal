@@ -27,7 +27,7 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       toast.error(error.message);
@@ -35,8 +35,18 @@ export default function LoginPage() {
       return;
     }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
     toast.success("Welcome back!");
-    router.push("/");
+    if (profile?.role === "admin") {
+      router.push("/admin");
+    } else {
+      router.push("/evaluator");
+    }
     router.refresh();
   };
 
