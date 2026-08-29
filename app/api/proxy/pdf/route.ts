@@ -156,19 +156,37 @@ export async function GET(request: NextRequest) {
     // hop is re-validated against the allowlist and private-IP block —
     // this prevents an allowlisted host from redirecting the proxy to an
     // internal/private target (SSRF via redirect).
+    //
+    // Google Drive's uc?export=download flow sets a cookie on its
+    // interstitial (virus-scan warning / confirm) page and expects it back
+    // on the next hop to break out of the loop. Without forwarding it, the
+    // redirect chain can bounce back on itself and hit MAX_REDIRECTS.
     let currentUrl = downloadUrl;
     let pdfResponse: Response;
     const MAX_REDIRECTS = 5;
+    const cookieJar = new Map<string, string>();
     try {
       let redirects = 0;
       for (;;) {
         await assertHostIsSafeToFetch(currentUrl);
-        const res = await fetch(currentUrl, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; hackX-jr-proxy/1.0)",
-          },
-          redirect: "manual",
-        });
+        const headers: Record<string, string> = {
+          "User-Agent": "Mozilla/5.0 (compatible; hackX-jr-proxy/1.0)",
+        };
+        if (cookieJar.size > 0) {
+          headers["Cookie"] = [...cookieJar.entries()]
+            .map(([k, v]) => `${k}=${v}`)
+            .join("; ");
+        }
+        const res = await fetch(currentUrl, { headers, redirect: "manual" });
+
+        const setCookies =
+          (res.headers as Headers & { getSetCookie?: () => string[] }).getSetCookie?.() ??
+          (res.headers.get("set-cookie") ? [res.headers.get("set-cookie")!] : []);
+        for (const c of setCookies) {
+          const pair = c.split(";")[0];
+          const eq = pair.indexOf("=");
+          if (eq > 0) cookieJar.set(pair.slice(0, eq).trim(), pair.slice(eq + 1).trim());
+        }
 
         if (res.status >= 300 && res.status < 400 && res.headers.get("location")) {
           if (++redirects > MAX_REDIRECTS) {
@@ -197,10 +215,33 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const contentType = pdfResponse.headers.get("content-type") || "";
+    let contentType = pdfResponse.headers.get("content-type") || "";
 
     // Google Drive returns HTML pages for login walls, virus scan confirmations, etc.
     // Valid PDF downloads come as application/pdf OR application/octet-stream.
+    // The static confirm=t query param doesn't always bypass the interstitial —
+    // Drive sometimes requires a per-request confirm token embedded in that
+    // HTML page. Extract it and retry once with the cookie from the jar.
+    if (contentType.includes("text/html") && driveId) {
+      const html = await pdfResponse.text();
+      const confirmMatch = html.match(/confirm=([0-9A-Za-z_-]+)/);
+      if (confirmMatch) {
+        const retryUrl = `https://drive.google.com/uc?export=download&id=${driveId}&confirm=${confirmMatch[1]}`;
+        await assertHostIsSafeToFetch(retryUrl);
+        const headers: Record<string, string> = {
+          "User-Agent": "Mozilla/5.0 (compatible; hackX-jr-proxy/1.0)",
+        };
+        if (cookieJar.size > 0) {
+          headers["Cookie"] = [...cookieJar.entries()]
+            .map(([k, v]) => `${k}=${v}`)
+            .join("; ");
+        }
+        pdfResponse = await fetch(retryUrl, { headers, redirect: "follow" });
+        currentUrl = retryUrl;
+        contentType = pdfResponse.headers.get("content-type") || "";
+      }
+    }
+
     if (contentType.includes("text/html")) {
       console.error(`[PDF proxy] Got HTML instead of PDF for ${currentUrl}`);
       return NextResponse.json(
