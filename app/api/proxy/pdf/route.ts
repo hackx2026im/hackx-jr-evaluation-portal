@@ -14,6 +14,10 @@ const ALLOWED_HOSTS = new Set([
   "drive.google.com",
   "docs.google.com",
   "googleusercontent.com",
+  // drive.google.com's uc?export=download flow now redirects here for the
+  // actual file bytes — a distinct domain from googleusercontent.com, not
+  // a subdomain of it.
+  "drive.usercontent.google.com",
 ]);
 
 function isHostAllowed(hostname: string): boolean {
