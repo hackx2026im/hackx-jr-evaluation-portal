@@ -43,7 +43,7 @@ export async function PATCH(request: Request) {
     const { error } = await admin
       .from("system_settings")
       .upsert(
-        { key, value: JSON.stringify(value), updated_at: new Date().toISOString() },
+        { key, value, updated_at: new Date().toISOString() },
         { onConflict: "key" }
       );
 
